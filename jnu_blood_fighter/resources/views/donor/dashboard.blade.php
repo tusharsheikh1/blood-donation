@@ -6,7 +6,7 @@
 <div class="container mt-5">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -21,7 +21,12 @@
                             <p class="text-muted mb-0">Blood Type: <span class="badge bg-danger">{{ $donor->blood_type }}</span></p>
                         </div>
                         <div>
-                            <a href="{{ route('donor.profile') }}" class="btn btn-primary">Edit Profile</a>
+                            <a href="{{ route('donor.profile') }}" class="btn btn-primary me-2">
+                                <i class="bi bi-pencil-fill"></i> Edit Profile
+                            </a>
+                            <a href="{{ route('blood-request.create') }}" class="btn btn-danger">
+                                <i class="bi bi-megaphone-fill"></i> Request Blood
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -149,17 +154,29 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                     <a href="{{ route('home') }}" class="btn btn-outline-primary w-100">
                         <i class="bi bi-search"></i> Find Other Donors
                     </a>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
+                    <a href="{{ route('blood-request.create') }}" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-megaphone-fill"></i> Request Blood
+                    </a>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <a href="{{ route('blood-request.my-requests') }}" class="btn btn-outline-info w-100">
+                        <i class="bi bi-clipboard-check-fill"></i> My Requests
+                    </a>
+                </div>
+                <div class="col-md-3 mb-3">
                     <a href="{{ route('donor.profile') }}" class="btn btn-outline-success w-100">
                         <i class="bi bi-pencil"></i> Update Profile
                     </a>
                 </div>
-                <div class="col-md-4 mb-3">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                     <form method="POST" action="{{ route('donor.logout') }}" class="d-inline w-100">
                         @csrf
                         <button type="submit" class="btn btn-outline-danger w-100">

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DonorController;
+use App\Http\Controllers\BloodRequestController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 
@@ -26,6 +27,15 @@ Route::prefix('donor')->group(function () {
         Route::post('/profile', [DonorController::class, 'updateProfile'])->name('donor.profile.update');
         Route::post('/logout', [DonorController::class, 'logout'])->name('donor.logout');
     });
+});
+
+// Blood Request Routes (Protected - Donors only)
+Route::middleware('auth:web')->prefix('blood-request')->group(function () {
+    Route::get('/create', [BloodRequestController::class, 'create'])->name('blood-request.create');
+    Route::post('/create', [BloodRequestController::class, 'store'])->name('blood-request.store');
+    Route::get('/my-requests', [BloodRequestController::class, 'myRequests'])->name('blood-request.my-requests');
+    Route::post('/{id}/update-status', [BloodRequestController::class, 'updateStatus'])->name('blood-request.update-status');
+    Route::delete('/{id}', [BloodRequestController::class, 'destroy'])->name('blood-request.destroy');
 });
 
 // API routes for location dropdowns
