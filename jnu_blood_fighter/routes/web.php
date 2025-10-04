@@ -1,0 +1,52 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DonorController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController;
+
+// Public Routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Donor Routes
+Route::prefix('donor')->group(function () {
+    // Guest routes
+    Route::middleware('guest:web')->group(function () {
+        Route::get('/register', [DonorController::class, 'showRegister'])->name('donor.register');
+        Route::post('/register', [DonorController::class, 'register']);
+        Route::get('/login', [DonorController::class, 'showLogin'])->name('donor.login');
+        Route::post('/login', [DonorController::class, 'login']);
+    });
+
+    // Authenticated donor routes
+    Route::middleware('auth:web')->group(function () {
+        Route::get('/dashboard', [DonorController::class, 'dashboard'])->name('donor.dashboard');
+        Route::get('/profile', [DonorController::class, 'showProfile'])->name('donor.profile');
+        Route::post('/profile', [DonorController::class, 'updateProfile'])->name('donor.profile.update');
+        Route::post('/logout', [DonorController::class, 'logout'])->name('donor.logout');
+    });
+});
+
+// API routes for location dropdowns
+Route::get('/api/districts/{division}', [DonorController::class, 'getDistricts']);
+Route::get('/api/upazilas/{district}', [DonorController::class, 'getUpazilas']);
+
+// Admin Routes
+Route::prefix('admin')->group(function () {
+    // Guest admin routes
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
+        Route::post('/login', [AdminAuthController::class, 'login']);
+    });
+
+    // Protected admin routes
+    Route::middleware('auth:admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/donors', [DashboardController::class, 'donors'])->name('admin.donors');
+        Route::get('/donors/{id}/edit', [DashboardController::class, 'editDonor'])->name('admin.donors.edit');
+        Route::post('/donors/{id}', [DashboardController::class, 'updateDonor'])->name('admin.donors.update');
+        Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+    });
+});
