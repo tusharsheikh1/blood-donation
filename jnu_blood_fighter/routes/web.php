@@ -59,4 +59,4 @@ Route::prefix('admin')->group(function () {
         Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
-});
+});//
