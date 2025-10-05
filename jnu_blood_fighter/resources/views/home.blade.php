@@ -209,7 +209,9 @@
 
         @if($donors->hasPages())
             <div class="pagination-wrapper">
-                {{ $donors->appends(request()->query())->links() }}
+                <nav aria-label="Donors pagination">
+                    {{ $donors->appends(request()->query())->links() }}
+                </nav>
             </div>
         @endif
     </div>
@@ -246,9 +248,9 @@
                             @endif
 
                             <div class="request-content">
-                                <div class="request-blood">
-                                    <div class="blood-badge large">{{ $request->blood_type }}</div>
-                                    <span class="blood-quantity">{{ $request->blood_quantity }} bag(s)</span>
+                                <div class="request-header">
+                                    <div class="blood-badge-compact">{{ $request->blood_type }}</div>
+                                    <span class="blood-quantity-compact">{{ $request->blood_quantity }} bag(s)</span>
                                 </div>
 
                                 <div class="request-info">
@@ -280,9 +282,9 @@
                                     @endif
 
                                     @if($request->additional_notes)
-                                        <div class="request-notes">
+                                        <div class="request-notes-compact">
                                             <i class="bi bi-info-circle-fill"></i>
-                                            {{ Str::limit($request->additional_notes, 100) }}
+                                            <span>{{ Str::limit($request->additional_notes, 100) }}</span>
                                         </div>
                                     @endif
 
@@ -301,7 +303,9 @@
 
             @if($bloodRequests->hasPages())
                 <div class="pagination-wrapper">
-                    {{ $bloodRequests->appends(request()->query())->links() }}
+                    <nav aria-label="Blood requests pagination">
+                        {{ $bloodRequests->appends(request()->query())->links() }}
+                    </nav>
                 </div>
             @endif
         </div>
@@ -879,9 +883,71 @@
     flex-wrap: wrap;
 }
 
-/* Pagination */
+/* Pagination Fixes */
 .pagination-wrapper {
+    display: flex;
+    justify-content: center;
     margin-top: 2rem;
+}
+
+.pagination-wrapper nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: var(--radius-md);
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    z-index: 2;
+    color: var(--primary-dark);
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.page-link:focus {
+    z-index: 3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.page-item.disabled .page-link {
+    color: var(--text-muted);
+    pointer-events: none;
+    background-color: #fff;
+    border-color: var(--border-color);
+    opacity: 0.5;
 }
 
 /* Mobile Responsive */
@@ -962,6 +1028,15 @@
     
     .section-title {
         font-size: 1.25rem;
+    }
+    
+    .page-link {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.875rem;
+    }
+    
+    .pagination {
+        gap: 0.25rem;
     }
 }
 </style>
