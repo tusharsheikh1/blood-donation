@@ -6,54 +6,57 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-danger text-white text-center">
-                    <h4 class="mb-0">Become a Blood Donor</h4>
+            {{-- Modern Card Style: Larger shadow, soft rounded corners --}}
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-danger bg-gradient text-white text-center rounded-top-4 py-3">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-heart-fill me-2"></i> Become a Blood Donor</h3>
+                    <p class="mb-0 small opacity-75">Join our community and save a life today.</p>
                 </div>
-                <div class="card-body p-4">
-                    {{-- Display validation errors --}}
+                <div class="card-body p-4 p-md-5">
+                    
+                    {{-- Alert Styling (improved) --}}
                     @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
                             <strong><i class="bi bi-exclamation-triangle-fill"></i> Registration Failed!</strong>
-                            <p class="mb-2">Please fix the following errors:</p>
-                            <ul class="mb-0">
+                            <p class="mb-2 mt-1">Please fix the following errors:</p>
+                            <ul class="mb-0 small">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
-                    {{-- Display session error (from controller) --}}
                     @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
                             <strong><i class="bi bi-exclamation-circle-fill"></i> Error!</strong>
                             <p class="mb-0">{{ session('error') }}</p>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
-                    {{-- Display success message --}}
                     @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
                             <strong><i class="bi bi-check-circle-fill"></i> Success!</strong>
                             <p class="mb-0">{{ session('success') }}</p>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     <form method="POST" action="{{ route('donor.register') }}" id="registerForm" novalidate>
                         @csrf
                         
+                        {{-- Personal Information Section --}}
+                        <h5 class="text-danger border-bottom pb-2 mb-4"><i class="bi bi-person-vcard me-2"></i> Personal Details</h5>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="name" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
                                 <input 
                                     type="text" 
                                     id="name" 
                                     name="name" 
-                                    class="form-control @error('name') is-invalid @enderror" 
+                                    class="form-control form-control-lg @error('name') is-invalid @enderror rounded-3" 
                                     value="{{ old('name') }}" 
                                     required
                                     maxlength="255"
@@ -68,13 +71,13 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
                                 <input 
                                     type="email" 
                                     id="email" 
                                     name="email" 
-                                    class="form-control @error('email') is-invalid @enderror" 
+                                    class="form-control form-control-lg @error('email') is-invalid @enderror rounded-3" 
                                     value="{{ old('email') }}" 
                                     required
                                     placeholder="example@email.com"
@@ -90,13 +93,13 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="phone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
                                 <input 
                                     type="text" 
                                     id="phone" 
                                     name="phone" 
-                                    class="form-control @error('phone') is-invalid @enderror" 
+                                    class="form-control form-control-lg @error('phone') is-invalid @enderror rounded-3" 
                                     value="{{ old('phone') }}" 
                                     placeholder="01XXXXXXXXX" 
                                     required
@@ -112,12 +115,12 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="blood_type" class="form-label">Blood Type <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="blood_type" class="form-label fw-bold">Blood Type <span class="text-danger">*</span></label>
                                 <select 
                                     id="blood_type" 
                                     name="blood_type" 
-                                    class="form-select @error('blood_type') is-invalid @enderror" 
+                                    class="form-select form-select-lg @error('blood_type') is-invalid @enderror rounded-3" 
                                     required
                                 >
                                     <option value="">-- Select Your Blood Type --</option>
@@ -137,13 +140,15 @@
                             </div>
                         </div>
 
+                        {{-- Location Section --}}
+                        <h5 class="text-danger border-bottom pb-2 mb-4 mt-4"><i class="bi bi-geo-alt-fill me-2"></i> Location Details</h5>
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="division" class="form-label">Division <span class="text-danger">*</span></label>
+                            <div class="col-md-4 mb-4">
+                                <label for="division" class="form-label fw-bold">Division <span class="text-danger">*</span></label>
                                 <select 
                                     name="division" 
                                     id="division" 
-                                    class="form-select @error('division') is-invalid @enderror" 
+                                    class="form-select @error('division') is-invalid @enderror rounded-3" 
                                     required
                                 >
                                     <option value="">-- Select Division --</option>
@@ -160,12 +165,12 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label for="district" class="form-label">District <span class="text-danger">*</span></label>
+                            <div class="col-md-4 mb-4">
+                                <label for="district" class="form-label fw-bold">District <span class="text-danger">*</span></label>
                                 <select 
                                     name="district" 
                                     id="district" 
-                                    class="form-select @error('district') is-invalid @enderror" 
+                                    class="form-select @error('district') is-invalid @enderror rounded-3" 
                                     required
                                 >
                                     <option value="">-- Select District --</option>
@@ -179,12 +184,12 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label for="upazila" class="form-label">Upazila <span class="text-danger">*</span></label>
+                            <div class="col-md-4 mb-4">
+                                <label for="upazila" class="form-label fw-bold">Upazila <span class="text-danger">*</span></label>
                                 <select 
                                     name="upazila" 
                                     id="upazila" 
-                                    class="form-select @error('upazila') is-invalid @enderror" 
+                                    class="form-select @error('upazila') is-invalid @enderror rounded-3" 
                                     required
                                 >
                                     <option value="">-- Select Upazila --</option>
@@ -199,12 +204,12 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                        <div class="mb-4">
+                            <label for="address" class="form-label fw-bold">Address <span class="text-danger">*</span></label>
                             <textarea 
                                 id="address" 
                                 name="address" 
-                                class="form-control @error('address') is-invalid @enderror" 
+                                class="form-control @error('address') is-invalid @enderror rounded-3" 
                                 rows="2" 
                                 required
                                 maxlength="500"
@@ -219,14 +224,16 @@
                             @enderror
                         </div>
 
+                        {{-- Security Section --}}
+                        <h5 class="text-danger border-bottom pb-2 mb-4 mt-4"><i class="bi bi-key-fill me-2"></i> Account Security</h5>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="password" class="form-label fw-bold">Password <span class="text-danger">*</span></label>
                                 <input 
                                     type="password" 
                                     id="password" 
                                     name="password" 
-                                    class="form-control @error('password') is-invalid @enderror" 
+                                    class="form-control form-control-lg @error('password') is-invalid @enderror rounded-3" 
                                     required
                                     minlength="6"
                                     placeholder="Enter password"
@@ -240,13 +247,13 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <div class="col-md-6 mb-4">
+                                <label for="password_confirmation" class="form-label fw-bold">Confirm Password <span class="text-danger">*</span></label>
                                 <input 
                                     type="password" 
                                     id="password_confirmation" 
                                     name="password_confirmation" 
-                                    class="form-control" 
+                                    class="form-control form-control-lg rounded-3" 
                                     required
                                     minlength="6"
                                     placeholder="Re-enter password"
@@ -255,22 +262,23 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="terms" required>
-                                <label class="form-check-label" for="terms">
-                                    I agree to be contacted when blood is needed and my information is accurate
+                                <label class="form-check-label fw-bold" for="terms">
+                                    I agree to be contacted when blood is needed and confirm my information is accurate <span class="text-danger">*</span>
                                 </label>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-danger w-100" id="submitBtn">
-                            <i class="bi bi-person-plus"></i> Register as Donor
+                        {{-- Button style: Larger, bolder, with rounded corners --}}
+                        <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold rounded-3" id="submitBtn">
+                            <i class="bi bi-person-plus-fill me-1"></i> Register as Donor
                         </button>
                     </form>
 
-                    <div class="text-center mt-3">
-                        <p class="mb-0">Already registered? <a href="{{ route('donor.login') }}">Login here</a></p>
+                    <div class="text-center mt-4">
+                        <p class="mb-0 text-muted">Already registered? <a href="{{ route('donor.login') }}" class="text-danger fw-bold text-decoration-none">Login here</a></p>
                     </div>
                 </div>
             </div>
@@ -304,17 +312,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Show error message
     function showError(message) {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-        alertDiv.innerHTML = `
-            <strong><i class="bi bi-exclamation-triangle-fill"></i> Error!</strong>
-            <p class="mb-0">${message}</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.querySelector('.card-body').insertBefore(alertDiv, registerForm);
+        // Remove existing error alert if any
+        document.querySelector('.card-body').querySelectorAll('.alert-danger.custom-error').forEach(alert => alert.remove());
         
-        // Auto-remove after 5 seconds
-        setTimeout(() => alertDiv.remove(), 5000);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show rounded-3 custom-error';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <strong><i class="bi bi-exclamation-triangle-fill"></i> Validation Error!</strong>
+            <p class="mb-0 mt-1">${message}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        // Insert right after the card-header if it exists, or at the top of card-body
+        const header = document.querySelector('.card-header');
+        if (header) {
+            header.insertAdjacentElement('afterend', alertDiv);
+        } else {
+            document.querySelector('.card-body').prepend(alertDiv);
+        }
+        
+        // Scroll to the error message
+        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // Division change handler
@@ -324,6 +342,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Reset and clear dependent selects
         districtSelect.innerHTML = '<option value="">-- Select District --</option>';
         upazilaSelect.innerHTML = '<option value="">-- Select Upazila --</option>';
+        document.getElementById('district-hint').textContent = division ? 'Loading districts...' : 'Select division first';
+        document.getElementById('upazila-hint').textContent = 'Select district first';
         
         if (division) {
             setLoading(districtSelect, true, 'Loading districts...');
@@ -346,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         districtSelect.add(option);
                     });
                     setLoading(districtSelect, false);
+                    document.getElementById('district-hint').textContent = 'Select your district';
                     
                     // If there's an old district value, trigger change to load upazilas
                     if (oldDistrict && divisionSelect.value === oldDivision) {
@@ -357,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('Error loading districts:', error);
                     districtSelect.innerHTML = '<option value="">-- Error loading districts --</option>';
                     setLoading(districtSelect, false);
+                    document.getElementById('district-hint').textContent = 'Error loading districts';
                     showError(`Failed to load districts: ${error.message}. Please try again or refresh the page.`);
                 });
         } else {
@@ -370,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Reset upazila select
         upazilaSelect.innerHTML = '<option value="">-- Select Upazila --</option>';
+        document.getElementById('upazila-hint').textContent = district ? 'Loading upazilas...' : 'Select district first';
         
         if (district) {
             setLoading(upazilaSelect, true, 'Loading upazilas...');
@@ -392,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         upazilaSelect.add(option);
                     });
                     setLoading(upazilaSelect, false);
+                    document.getElementById('upazila-hint').textContent = 'Select your upazila';
                     
                     // If there's an old upazila value, select it
                     if (oldUpazila && districtSelect.value === oldDistrict) {
@@ -402,6 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('Error loading upazilas:', error);
                     upazilaSelect.innerHTML = '<option value="">-- Error loading upazilas --</option>';
                     setLoading(upazilaSelect, false);
+                    document.getElementById('upazila-hint').textContent = 'Error loading upazilas';
                     showError(`Failed to load upazilas: ${error.message}. Please try again or refresh the page.`);
                 });
         } else {
@@ -411,15 +436,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Form submission handler
     registerForm.addEventListener('submit', function(e) {
+        // Clear previous custom errors
+        document.querySelector('.card-body').querySelectorAll('.alert-danger.custom-error').forEach(alert => alert.remove());
+        
         let isValid = true;
         let errorMessages = [];
+        
+        // Only run custom JS validation if built-in browser validation passes
+        if (!registerForm.checkValidity()) {
+            isValid = false;
+        }
 
-        // Phone validation
+        // Phone validation (re-enforce custom pattern)
         const phone = document.getElementById('phone').value;
         const phonePattern = /^01[0-9]{9}$/;
         if (!phonePattern.test(phone)) {
             isValid = false;
-            errorMessages.push('Phone number must be 11 digits starting with 01');
+            errorMessages.push('Phone number must be **11 digits** starting with **01**');
         }
 
         // Password match validation
@@ -428,25 +461,40 @@ document.addEventListener('DOMContentLoaded', function () {
         if (password !== passwordConfirmation) {
             isValid = false;
             errorMessages.push('Passwords do not match');
+            // Add is-invalid class to confirmation field for visual feedback
+            document.getElementById('password_confirmation').classList.add('is-invalid');
+        } else {
+             document.getElementById('password_confirmation').classList.remove('is-invalid');
+        }
+        
+        // Location validation (only custom check if form.checkValidity() fails on select fields)
+        if (!divisionSelect.value && divisionSelect.required) {
+            isValid = false;
+            errorMessages.push('Please select a **Division**');
+        }
+        if (!districtSelect.value && districtSelect.required) {
+            isValid = false;
+            errorMessages.push('Please select a **District**');
+        }
+        if (!upazilaSelect.value && upazilaSelect.required) {
+            isValid = false;
+            errorMessages.push('Please select an **Upazila**');
+        }
+        
+        if (!document.getElementById('terms').checked) {
+             isValid = false;
+            errorMessages.push('You must agree to the **terms and conditions** to register');
         }
 
-        // Location validation
-        if (!divisionSelect.value) {
-            isValid = false;
-            errorMessages.push('Please select a division');
-        }
-        if (!districtSelect.value) {
-            isValid = false;
-            errorMessages.push('Please select a district');
-        }
-        if (!upazilaSelect.value) {
-            isValid = false;
-            errorMessages.push('Please select an upazila');
-        }
 
         if (!isValid) {
             e.preventDefault();
-            showError(errorMessages.join('<br>'));
+            // Show all errors at once if we collected custom errors
+            if(errorMessages.length > 0) {
+                showError(errorMessages.join('<br>'));
+            }
+            // Add Bootstrap's validation styles
+            registerForm.classList.add('was-validated');
             return false;
         }
 
@@ -457,18 +505,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // On page load, if there's an old division, trigger the cascade
     if (oldDivision) {
-        divisionSelect.dispatchEvent(new Event('change'));
+        // Use a timeout to ensure all DOM elements are fully rendered before dispatching the event
+        setTimeout(() => divisionSelect.dispatchEvent(new Event('change')), 0);
     }
 
     // Phone number formatting helper
     document.getElementById('phone').addEventListener('input', function(e) {
-        // Remove non-numeric characters
-        this.value = this.value.replace(/[^0-9]/g, '');
-        
-        // Limit to 11 digits
-        if (this.value.length > 11) {
-            this.value = this.value.slice(0, 11);
-        }
+        // Remove non-numeric characters and limit to 11 digits
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
     });
 });
 </script>

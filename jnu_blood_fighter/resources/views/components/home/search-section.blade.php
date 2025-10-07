@@ -31,6 +31,25 @@
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
 }
 
+/* --- SECTION HEADER STYLES --- */
+.section-header {
+    /* FIX: Explicitly set border-bottom to none to remove the red line. */
+    border-bottom: none; 
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.section-title i {
+    color: var(--primary-red, #dc3545);
+    margin-right: 0.5rem;
+}
+
 @media (max-width: 575px) {
     .search-card {
         padding: 1.25rem;
@@ -86,7 +105,7 @@
                 <div class="col-md-2 col-12">
                     <label class="form-label d-none d-md-block">&nbsp;</label>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary flex-grow-1">
+                        <button type="submit" class="btn btn-primary flex-grow-1" id="search-submit-btn">
                             <i class="bi bi-search"></i> Search
                         </button>
                         <a href="{{ route('home') }}" class="btn btn-outline-secondary" title="Clear">
@@ -98,3 +117,31 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    
+    if (searchForm) {
+        // Intercept form submission to use AJAX
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const searchParams = new URLSearchParams(formData);
+            
+            // Build the URL with current filters
+            const url = this.getAttribute('action') + '?' + searchParams.toString();
+            
+            // Call the function from the donors section script to load new content
+            if (window.loadDonorsContent) {
+                // Pass false for isAppend to indicate a new search/replace
+                window.loadDonorsContent(url, false);
+            } else {
+                // Fallback: submit the form normally if the AJAX script hasn't loaded
+                this.submit();
+            }
+        });
+    }
+});
+</script>

@@ -1,247 +1,282 @@
 <style>
-/* Blood Request Card Styles */
+/* Pixel-Perfect UI/UX Inspired Blood Request Card Styles */
+
+/* Color Variables adjusted for correct contrast and theme */
+:root {
+    --ref-urgent-red: #da3c46; /* Brighter red for urgent banner/icons (Original UI color) */
+    --ref-blood-red: #780606; /* Deep blood color for blood type circle/badge */
+    --ref-green: #37b752; /* The specific green for the CTA button */
+    --ref-dark-text: #343a40; /* Darker text for main info, like "Patient Condition" */
+    --ref-light-text: #6c757d; /* Lighter text for secondary info, like "Posted" */
+    --ref-lighter-text-value: #495057; /* For detailed text values */
+
+    /* NEW COLORS for conditional urgency */
+    --ref-emergency-red: #dc3545; /* Standard emergency red */
+    --ref-urgent-yellow: #ffc107; /* Standard urgent yellow */
+}
+
 .request-card {
-    background: white;
-    border-radius: 16px;
+    background: #ffffff;
+    border-radius: 16px; 
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 2px solid #e9ecef;
+    /* Elevated shadow effect as seen in the image */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05); 
     height: 100%;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    position: relative;
+    text-align: center; /* All card content is centrally aligned */
 }
 
 .request-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); 
+    transform: translateY(-3px);
 }
 
-.request-card.emergency {
-    border-color: #dc3545;
-    animation: borderPulse 2s infinite;
-}
-
-.request-card.urgent {
-    border-color: #ffc107;
-}
-
-@keyframes borderPulse {
-    0%, 100% { border-color: #dc3545; }
-    50% { border-color: #ff4d5e; }
-}
-
-.request-badge {
-    padding: 0.625rem 1rem;
+/* Base Header Banner Style */
+.request-header-banner {
+    color: white;
+    padding: 1rem;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
-.request-badge.emergency {
-    background: #dc3545;
-    color: white;
+/* Style for IMMIDIATE/EMERGENCY Need (User requested red) */
+.request-header-banner.emergency {
+    background: var(--ref-emergency-red);
 }
 
-.request-badge.urgent {
-    background: #ffc107;
-    color: #000;
+/* Style for URGENT/SPECIFIC DATE Need (User requested yellow) */
+.request-header-banner.urgent-date {
+    background: var(--ref-urgent-yellow);
+    color: #343a40; /* Dark text for yellow background */
 }
 
-.request-content {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+
+.request-header-banner i {
+    font-size: 1.2rem; /* Bell icon size */
 }
 
-.request-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e9ecef;
+/* Container for blood type circle and quantity badge */
+.blood-type-container {
+    position: relative;
+    width: 110px; 
+    height: 110px; 
+    margin: 1.5rem auto 1rem; 
 }
 
-.blood-badge-compact {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #dc3545, #c82333);
+/* Blood Type Circle (Deep blood red for theme) */
+.blood-type-circle {
+    width: 100%;
+    height: 100%;
+    background: var(--ref-blood-red);
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    font-size: 2.5rem; 
+    font-weight: 800;
+    box-shadow: 0 6px 20px rgba(120, 6, 6, 0.4); 
 }
 
-.blood-quantity-compact {
-    background: #f8f9fa;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.875rem;
-    color: #2c3e50;
-    border: 1px solid #e9ecef;
+/* Quantity Badge positioned over the blood type circle */
+.quantity-badge {
+    position: absolute;
+    top: 5px; 
+    right: -25px; 
+    background: var(--ref-blood-red); 
+    color: white; 
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    white-space: nowrap; 
+    border: 1px solid var(--ref-blood-red); 
 }
 
-.request-info {
-    flex: 1;
+.request-title {
+    font-size: 1.25rem; 
+    font-weight: 700; 
+    color: var(--ref-dark-text); 
+    margin-bottom: 2rem; 
 }
 
-.request-patient {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.875rem;
+/* Info List */
+.request-info-list {
+    text-align: left; 
+    padding: 0 1.5rem; 
+    flex: 1; 
+}
+
+.request-detail-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem; 
+    margin-bottom: 1.5rem; 
+    font-size: 0.95rem; 
+    color: var(--ref-dark-text); 
+}
+
+.request-detail-line i {
+    color: var(--ref-urgent-red); /* Brighter red for icons */
+    margin-top: 3px; 
+    font-size: 1.1rem; 
+    flex-shrink: 0; 
+}
+
+.request-detail-line span {
+    font-weight: 500; 
+    color: var(--ref-dark-text); 
     line-height: 1.3;
 }
 
-.request-detail {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.625rem;
-    margin-bottom: 0.625rem;
-    font-size: 0.8125rem;
-    color: #2c3e50;
+.request-detail-line strong {
+    font-weight: 500; 
+    color: var(--ref-lighter-text-value); 
 }
 
-.request-detail i {
-    color: #dc3545;
-    margin-top: 2px;
-    font-size: 0.875rem;
-    flex-shrink: 0;
-}
 
-.request-detail span {
-    line-height: 1.4;
-}
-
-.request-notes-compact {
-    background: #fff3cd;
-    padding: 0.625rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    color: #856404;
-    margin: 0.875rem 0;
-    display: flex;
-    gap: 0.5rem;
-    align-items: flex-start;
-    border-left: 3px solid #ffc107;
-}
-
-.request-notes-compact i {
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
+/* Call to Action Button */
 .request-footer {
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid #e9ecef;
+    padding: 1.5rem; 
+    padding-top: 2rem; 
+}
+
+.btn-contact {
+    /* Large rounded corners from image */
+    border-radius: 14px; 
+    font-weight: 600; 
+    padding: 1rem 1rem; 
+    background: var(--ref-green); 
+    color: white;
+    /* Shadow adjusted to match the new button image's softer shadow */
+    box-shadow: 0 4px 12px rgba(55, 183, 82, 0.4); 
+    border: none;
+    transition: all 0.2s ease;
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem; /* Increased gap to match image spacing */
+    width: 100%;
+    text-decoration: none;
+    font-size: 1.2rem; /* Slightly larger text for prominence */
 }
 
-.request-footer .btn {
-    border-radius: 8px;
-    font-weight: 600;
-    padding: 0.625rem 1rem;
+.btn-contact:hover {
+    box-shadow: 0 6px 18px rgba(55, 183, 82, 0.5);
+    background: #2f9d45; 
+    transform: translateY(-1px);
 }
 
-.request-time {
-    font-size: 0.7rem;
-    color: #6c757d;
-    text-align: center;
-    background: #f8f9fa;
-    padding: 0.375rem 0.75rem;
-    border-radius: 50px;
+.request-posted-time {
+    font-size: 0.75rem; 
+    color: var(--ref-light-text); 
+    margin-top: 1rem;
+    font-weight: 500;
 }
 
 @media (max-width: 767px) {
-    .blood-badge-compact {
-        width: 50px;
-        height: 50px;
-        font-size: 1rem;
+    /* Adjustments for smaller screens, if necessary */
+    .blood-type-container {
+        width: 100px;
+        height: 100px;
     }
-    
-    .request-patient {
-        font-size: 1rem;
+    .blood-type-circle {
+        font-size: 2.2rem;
     }
-    
-    .request-detail {
-        font-size: 0.75rem;
+    .quantity-badge {
+        right: -15px; /* Adjust for smaller circle */
+    }
+    .request-info-list {
+        padding: 0 1rem;
     }
 }
 </style>
 
-<div class="request-card {{ $request->is_emergency ? 'emergency' : ($request->isUrgent() ? 'urgent' : '') }}">
+<div class="request-card">
+    
+    {{-- CONDITIONAL HEADER BANNER LOGIC --}}
     @if($request->is_emergency)
-        <div class="request-badge emergency">
+        <div class="request-header-banner emergency">
             <i class="bi bi-exclamation-triangle-fill"></i> EMERGENCY
         </div>
+    @elseif($request->needed_date && $request->needed_date->isFuture())
+        {{-- Urgent date set, but not an emergency (not within 24 hours, based on model logic) --}}
+        <div class="request-header-banner urgent-date">
+            <i class="bi bi-clock-fill"></i> URGENT REQUEST
+        </div>
     @elseif($request->isUrgent())
-        <div class="request-badge urgent">
-            <i class="bi bi-clock-fill"></i> URGENT
+         {{-- If it's urgent (within 24h) but not marked emergency, we default to the bright red urgent color --}}
+        <div class="request-header-banner emergency">
+            <i class="bi bi-bell-fill"></i> URGENT REQUEST
         </div>
     @endif
 
-    <div class="request-content">
-        <div class="request-header">
-            <div class="blood-badge-compact">{{ $request->blood_type }}</div>
-            <span class="blood-quantity-compact">{{ $request->blood_quantity }} bag(s)</span>
+    <div class="content-wrapper">
+        
+        <div class="blood-type-container">
+            {{-- Blood Type Circle (Deep blood color) --}}
+            <div class="blood-type-circle">{{ $request->blood_type }}</div>
+            {{-- Quantity Badge (Deep blood color) --}}
+            <span class="quantity-badge">{{ $request->blood_quantity }} bag(s)</span>
+        </div>
+        
+        {{-- Title --}}
+        <h3 class="request-title">Urgent Blood Donation Needed</h3>
+
+        {{-- Info List --}}
+        <div class="request-info-list">
+            
+            {{-- Patient Condition (Heart icon) --}}
+            <div class="request-detail-line">
+                <i class="bi bi-heart-fill"></i>
+                <span>Patient Condition: <strong>{{ Str::limit($request->disease, 30, '...') }}</strong></span>
+            </div>
+            
+            {{-- Hospital (Cross/Plus icon) --}}
+            <div class="request-detail-line">
+                <i class="bi bi-plus-circle-fill"></i> 
+                <span>Hospital: <strong>{{ Str::limit($request->hospital_name, 30, '...') }}</strong></span>
+            </div>
+            
+            {{-- Location (Pin icon) --}}
+            <div class="request-detail-line">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Location: <strong>{{ $request->hospital_location }}, {{ $request->upazila }}, {{ $request->district }}</strong></span>
+            </div>
+
+            {{-- Needed By Date (Calendar icon) --}}
+            <div class="request-detail-line">
+                <i class="bi bi-calendar-event-fill"></i>
+                <span>
+                    @if($request->is_emergency)
+                        Needed **IMMEDIATELY**
+                    @elseif($request->needed_date)
+                        Needed in **{{ $request->needed_date->diffForHumans(null, true) }}**
+                        <br>
+                        <small>{{ $request->needed_date->format('M d, Y h:i A') }}</small>
+                    @else
+                        Needed **AS SOON AS POSSIBLE**
+                    @endif
+                </span>
+            </div>
         </div>
 
-        <div class="request-info">
-            <h3 class="request-patient">{{ $request->patient_name }}</h3>
-            
-            <div class="request-detail">
-                <i class="bi bi-heart-pulse-fill"></i>
-                <span><strong>Reason:</strong> {{ $request->disease }}</span>
-            </div>
-            
-            <div class="request-detail">
-                <i class="bi bi-hospital-fill"></i>
-                <span><strong>Hospital:</strong> {{ $request->hospital_name }}</span>
-            </div>
-            
-            <div class="request-detail">
-                <i class="bi bi-geo-alt-fill"></i>
-                <span>{{ $request->hospital_location }}, {{ $request->upazila }}, {{ $request->district }}</span>
-            </div>
-
-            @if(!$request->is_emergency && $request->needed_date)
-                <div class="request-detail">
-                    <i class="bi bi-calendar-event-fill"></i>
-                    <span>
-                        <strong>Needed:</strong> {{ $request->needed_date->format('M d, Y h:i A') }}
-                        <small class="text-muted d-block ms-4">({{ $request->needed_date->diffForHumans() }})</small>
-                    </span>
-                </div>
-            @endif
-
-            @if($request->additional_notes)
-                <div class="request-notes-compact">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <span>{{ Str::limit($request->additional_notes, 100) }}</span>
-                </div>
-            @endif
-
-            <div class="request-footer">
-                <a href="tel:{{ $request->contact_number }}" class="btn btn-success">
-                    <i class="bi bi-telephone-fill"></i> {{ $request->contact_number }}
-                </a>
-                <span class="request-time">{{ $request->created_at->diffForHumans() }}</span>
-            </div>
+        {{-- Footer/CTA --}}
+        <div class="request-footer">
+            <a href="tel:{{ $request->contact_number }}" class="btn-contact">
+                <i class="bi bi-telephone-fill"></i> Call: {{ $request->contact_number }}
+            </a>
+            <p class="request-posted-time">Posted: {{ $request->created_at->diffForHumans() }}</p>
         </div>
     </div>
 </div>
