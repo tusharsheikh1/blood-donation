@@ -80,6 +80,11 @@
                         </p>
                         <p class="mb-1 small text-muted">
                             <i class="bi bi-geo-alt-fill me-1"></i> {{ $request->hospital_location }}, {{ $request->upazila }}, {{ $request->district }}
+                            @if($request->hospital_map_link)
+                                <a href="{{ $request->hospital_map_link }}" target="_blank" class="ms-2 badge bg-primary text-white text-decoration-none">
+                                    <i class="bi bi-pin-map-fill me-1"></i> View Map {{-- UPDATED ICON --}}
+                                </a>
+                            @endif
                         </p>
                         @if(!$request->is_emergency && $request->needed_date)
                             <p class="mb-1 small">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - Blood Donor Finder</title>
+    <title>@yield('title') - JnU LifeDrop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -12,6 +12,7 @@
             --dark-red: #c82333;
             --light-red: #f8d7da;
             --accent-red: #ff4757;
+            --logo-dark-red: #a71d2a;
         }
 
         * {
@@ -29,12 +30,10 @@
             overflow-x: hidden;
         }
         
-        /* * START: Style adjustment for fixed bottom nav on mobile 
-        * Moved from dashboard.blade.php to global layout
-        */
+        /* START: Style adjustment for fixed bottom nav on mobile */
         @media (max-width: 991.98px) {
             body {
-                padding-bottom: 70px; /* Space for the fixed-bottom mobile menu */
+                padding-bottom: 70px;
             }
         }
         /* END: Style adjustment for fixed bottom nav on mobile */
@@ -63,7 +62,7 @@
             background: rgba(220, 53, 69, 0.98);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: none; /* No shadow by default (hero section) */
+            box-shadow: none;
             padding: 1.25rem 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: none; 
@@ -74,13 +73,11 @@
 
         .navbar-custom.scrolled {
             padding: 0.75rem 0;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Shadow appears when scrolled */
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             background: rgba(220, 53, 69, 1);
         }
 
         .navbar-brand {
-            font-weight: 600;
-            font-size: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -89,20 +86,6 @@
 
         .navbar-brand:hover {
             transform: translateY(-2px);
-        }
-
-        .navbar-brand i {
-            font-size: 1.75rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
         }
 
         .navbar-custom .navbar-brand,
@@ -332,10 +315,6 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.25rem;
-            }
-
             .nav-link {
                 padding: 0.5rem !important;
             }
@@ -347,7 +326,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="bi bi-droplet-fill"></i> Blood Donor Finder
+                @include('components.logo')
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -413,15 +392,14 @@
 
     <footer class="bg-dark text-white text-center py-4">
         <div class="container">
-            <p class="mb-0">&copy; {{ date('Y') }} Blood Donor Finder. Saving Lives Together.</p>
+            <p class="mb-0">&copy; {{ date('Y') }} JnU LifeDrop. Saving Lives Together.</p>
             <small class="text-muted">
                 <a href="{{ route('admin.login') }}" class="text-muted">Admin Login</a>
             </small>
         </div>
     </footer>
     
-    {{-- START: Sticky Mobile Menu (Moved from dashboard.blade.php) --}}
-    {{-- Check if the user is authenticated as a 'web' user (donor) to display the menu --}}
+    {{-- START: Sticky Mobile Menu --}}
     @auth('web')
         <nav class="navbar fixed-bottom navbar-light bg-white border-top shadow-lg d-lg-none p-0" style="z-index: 1020;">
             <div class="container-fluid">

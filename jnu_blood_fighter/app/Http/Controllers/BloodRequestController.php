@@ -38,6 +38,7 @@ class BloodRequestController extends Controller
                 'needed_date' => 'nullable|required_if:is_emergency,0|date|after_or_equal:today',
                 'hospital_name' => 'required|string|max:255',
                 'hospital_location' => 'required|string|max:500',
+                'hospital_map_link' => 'nullable|url|max:500', // <-- ADDED VALIDATION
                 'division' => 'required|string|max:255',
                 'district' => 'required|string|max:255',
                 'upazila' => 'required|string|max:255',
@@ -54,6 +55,7 @@ class BloodRequestController extends Controller
                 'needed_date.after_or_equal' => 'The needed date cannot be in the past.',
                 'hospital_name.required' => 'Please enter the hospital name.',
                 'hospital_location.required' => 'Please enter the hospital location.',
+                'hospital_map_link.url' => 'The Google Map Link must be a valid URL.', // <-- ADDED ERROR MESSAGE
                 'contact_number.required' => 'Please provide a contact number.',
                 'contact_number.regex' => 'Contact number must be in the format: 01XXXXXXXXX (11 digits starting with 01)',
             ]);

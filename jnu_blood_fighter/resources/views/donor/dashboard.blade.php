@@ -5,11 +5,10 @@
 @section('content')
 <div class="container mt-5 mb-5 pt-3">
     
-    {{-- Main Welcome Card (Refined) --}}
+    {{-- Main Welcome Card --}}
     <div class="card shadow border-0 mb-4 rounded-4 bg-danger bg-gradient text-white">
         <div class="card-body p-4">
             @if(session('success'))
-                {{-- Move general session success to main layout or keep here for dashboard-specific messages --}}
                 <div class="alert alert-light alert-dismissible fade show mb-4 rounded-3 text-dark" role="alert">
                     <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -30,7 +29,7 @@
     </div>
 
     <div class="row">
-        {{-- Side Navigation / Donor Status Summary (Sidebar-like structure) --}}
+        {{-- Side Navigation --}}
         <div class="col-lg-3 mb-4 d-none d-lg-block">
             <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 80px;">
                 <div class="card-header bg-light border-0 rounded-top-4 py-3">
@@ -39,6 +38,9 @@
                 <div class="list-group list-group-flush">
                     <a href="#kpi-summary" class="list-group-item list-group-item-action fw-bold d-flex align-items-center">
                         <i class="bi bi-graph-up-arrow me-3"></i> Donor Summary
+                    </a>
+                    <a href="#bmi-section" class="list-group-item list-group-item-action fw-bold d-flex align-items-center">
+                        <i class="bi bi-heart-pulse me-3"></i> BMI & Health
                     </a>
                     <a href="#personal-info" class="list-group-item list-group-item-action fw-bold d-flex align-items-center">
                         <i class="bi bi-person-vcard me-3"></i> Personal Info
@@ -62,52 +64,81 @@
         {{-- Main Content Column --}}
         <div class="col-lg-9">
             
-            {{-- KPI Cards - Clean, high-contrast, modern metric blocks --}}
+            {{-- KPI Cards --}}
             <h3 class="fw-bold mb-3" id="kpi-summary">Donor Summary</h3>
             <div class="row">
                 <div class="col-md-4 mb-4">
                     {{-- Card 1: Availability Status --}}
                     <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
-                        <div class="card-body text-center p-4">
-                            <i class="bi bi-heart-pulse-fill display-4 mb-2 {{ $donor->is_available ? 'text-success' : 'text-secondary' }}"></i>
-                            <h5 class="card-title text-muted text-uppercase mb-1 small">Availability Status</h5>
-                            <h1 class="fw-bold mb-3 {{ $donor->is_available ? 'text-success' : 'text-secondary' }}" id="availabilityText">{{ $donor->is_available ? 'Available' : 'Not Available' }}</h1>
+                        <form method="POST" action="{{ route('donor.profile.update') }}" id="availabilityForm">
+                            @csrf
                             
-                            {{-- Button/Switch Integration --}}
-                            <div class="form-check form-switch d-flex justify-content-center align-items-center gap-3">
-                                <label class="form-check-label fw-bold text-muted small" for="dashboard_is_available">
-                                    Toggle Status
-                                </label>
-                                <input 
-                                    class="form-check-input" 
-                                    type="checkbox" 
-                                    name="dashboard_is_available_toggle"
-                                    id="dashboard_is_available" 
-                                    value="1" 
-                                    {{ $donor->is_available ? 'checked' : '' }} 
-                                    style="width: 3.5em; height: 1.8em; cursor: pointer;"
-                                >
+                            <input type="hidden" name="name" value="{{ $donor->name }}">
+                            <input type="hidden" name="phone" value="{{ $donor->phone }}">
+                            <input type="hidden" name="blood_type" value="{{ $donor->blood_type }}">
+                            <input type="hidden" name="division" value="{{ $donor->division }}">
+                            <input type="hidden" name="district" value="{{ $donor->district }}">
+                            <input type="hidden" name="upazila" value="{{ $donor->upazila }}">
+                            <input type="hidden" name="address" value="{{ $donor->address }}">
+                            <input type="hidden" name="last_donation_date" value="{{ $donor->last_donation_date?->format('Y-m-d') }}">
+                            <input type="hidden" name="gender" value="{{ $donor->gender }}">
+                            <input type="hidden" name="height_cm" value="{{ $donor->height_cm }}">
+                            <input type="hidden" name="weight_kg" value="{{ $donor->weight_kg }}">
+                            <input type="hidden" name="age" value="{{ $donor->age }}">
+
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-heart-pulse-fill display-4 mb-2 {{ $donor->is_available ? 'text-success' : 'text-secondary' }}"></i>
+                                <h5 class="card-title text-muted text-uppercase mb-1 small">Availability Status</h5>
+                                <h1 class="fw-bold mb-3 {{ $donor->is_available ? 'text-success' : 'text-secondary' }}" id="availabilityText">{{ $donor->is_available ? 'Available' : 'Not Available' }}</h1>
+                                
+                                <div class="form-check form-switch d-flex justify-content-center align-items-center gap-3">
+                                    <label class="form-check-label fw-bold text-muted small" for="dashboard_is_available">
+                                        Toggle Status
+                                    </label>
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="is_available"
+                                        id="dashboard_is_available" 
+                                        value="1" 
+                                        {{ $donor->is_available ? 'checked' : '' }} 
+                                        style="width: 3.5em; height: 1.8em; cursor: pointer;"
+                                        onchange="document.getElementById('availabilityForm').submit()"
+                                    >
+                                </div>
+                                
+                                <p class="mt-3 mb-0 small text-muted">
+                                    {{ $donor->is_available ? 'Ready to be contacted for a donation' : 'Marked as unavailable for donation' }}
+                                </p>
+                                <a href="{{ route('donor.profile') }}" class="btn btn-sm btn-outline-primary mt-3 rounded-pill">Edit Full Profile</a>
                             </div>
-                            
-                            <p class="mt-3 mb-0 small text-muted">
-                                {{ $donor->is_available ? 'Ready to be contacted for a donation' : 'Marked as unavailable for donation' }}
-                            </p>
-                            <a href="{{ route('donor.profile') }}" class="btn btn-sm btn-outline-primary mt-3 rounded-pill">Update Status on Profile</a>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    {{-- Card 2: Last Donation (UPDATED for direct date input and fixed to use POST) --}}
+                    {{-- Card 2: Last Donation --}}
                     <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
                         <form method="POST" action="{{ route('donor.profile.update') }}" id="lastDonationForm">
                             @csrf
-                            {{-- Removed @method('PUT') to fix the MethodNotAllowedHttpException --}}
+                            
+                            <input type="hidden" name="name" value="{{ $donor->name }}">
+                            <input type="hidden" name="phone" value="{{ $donor->phone }}">
+                            <input type="hidden" name="blood_type" value="{{ $donor->blood_type }}">
+                            <input type="hidden" name="division" value="{{ $donor->division }}">
+                            <input type="hidden" name="district" value="{{ $donor->district }}">
+                            <input type="hidden" name="upazila" value="{{ $donor->upazila }}">
+                            <input type="hidden" name="address" value="{{ $donor->address }}">
+                            <input type="hidden" name="is_available" value="{{ $donor->is_available ? 1 : 0 }}">
+                            <input type="hidden" name="gender" value="{{ $donor->gender }}">
+                            <input type="hidden" name="height_cm" value="{{ $donor->height_cm }}">
+                            <input type="hidden" name="weight_kg" value="{{ $donor->weight_kg }}">
+                            <input type="hidden" name="age" value="{{ $donor->age }}">
+
                             <div class="card-body text-center p-4">
                                 <i class="bi bi-calendar-check-fill display-4 text-info mb-2"></i>
                                 <h5 class="card-title text-muted text-uppercase mb-1 small">Last Donation Date</h5>
                                 
-                                {{-- Hidden Date Input that will be triggered by the icon --}}
                                 <input 
                                     type="date" 
                                     name="last_donation_date" 
@@ -118,7 +149,6 @@
                                     style="font-size: 1.5rem; font-weight: bold;"
                                 >
                                 
-                                {{-- Displayed Value and Trigger Button --}}
                                 <div class="d-flex justify-content-center align-items-center mb-2" id="last_donation_display">
                                     <h1 class="fw-bold mb-0 text-info me-2">
                                         @if($donor->last_donation_date)
@@ -134,18 +164,16 @@
                                 
                                 <p class="mb-0 small text-muted" id="last_donation_diff">
                                     @if($donor->last_donation_date)
-                                        {{ $donor->last_donation_date->diffForHumans() }} ago
+                                        {{ $donor->last_donation_date->diffForHumans() }}
                                     @else
                                         No donation record yet
                                     @endif
                                 </p>
 
-                                {{-- Submit/Save Button (Initially Hidden) --}}
                                 <button type="submit" id="save_date_btn" class="btn btn-sm btn-info text-white mt-3 rounded-pill d-none">
                                     Save New Date
                                 </button>
                                 
-                                {{-- Placeholder/Fallback Button (Initially Visible) --}}
                                 <a href="{{ route('donor.profile') }}" id="default_record_btn" class="btn btn-sm btn-outline-info mt-3 rounded-pill">Record New</a>
                             </div>
                         </form>
@@ -153,31 +181,133 @@
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    {{-- Card 3: Can Donate? (FIXED) --}}
+                    {{-- Card 3: Can Donate? --}}
                     <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
                         <div class="card-body text-center p-4">
-                            <i class="bi bi-droplet-half display-4 mb-2 {{ $donor->canDonate() ? 'text-danger' : 'text-warning' }}"></i>
+                            @php
+                                $canDonate = $donor->canDonate();
+                                $missingInfo = !$donor->gender || !$donor->height_cm || !$donor->weight_kg || !$donor->age;
+                            @endphp
+                            <i class="bi bi-droplet-half display-4 mb-2 
+                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-warning') }}"></i>
+                            
                             <h5 class="card-title text-muted text-uppercase mb-1 small">Eligibility</h5>
-                            <h1 class="fw-bold mb-2 {{ $donor->canDonate() ? 'text-danger' : 'text-warning' }}">{{ $donor->canDonate() ? 'Yes' : 'Not Yet' }}</h1>
+                            <h1 class="fw-bold mb-2 
+                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-warning') }}">
+                                {{ $canDonate && !$missingInfo ? 'Yes' : ($missingInfo ? 'Incomplete' : 'Not Yet') }}
+                            </h1>
                             <p class="mb-0 small text-muted">
-                                @if($donor->canDonate())
-                                    You are currently eligible to donate
+                                @if($missingInfo)
+                                    Please complete your profile (Gender, Age, Height, & Weight) to confirm eligibility.
+                                @elseif($canDonate)
+                                    You are currently eligible to donate.
                                 @else
-                                    {{-- FIX: Calculate 3 months from last donation and find the difference to now --}}
                                     @php
-                                        // Use copy() to safely modify the date, and check if it exists before calling methods
                                         $nextDonationDate = $donor->last_donation_date?->copy()->addMonths(3); 
                                         $remainingTime = $nextDonationDate ? now()->diffForHumans($nextDonationDate, \Carbon\CarbonInterface::DIFF_ABSOLUTE) : 'N/A';
                                     @endphp
-                                    Wait period: {{ $remainingTime }} remaining 
+                                    Wait period: {{ $remainingTime }} remaining.
                                 @endif
                             </p>
-                            <span class="btn btn-sm btn-outline-secondary mt-3 rounded-pill invisible">...</span> {{-- Placeholder to match height --}}
+                            <a href="{{ route('donor.profile') }}" class="btn btn-sm btn-outline-{{ $missingInfo ? 'info' : 'secondary' }} mt-3 rounded-pill">
+                                {{ $missingInfo ? 'Complete Profile' : 'View Profile Details' }}
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
             
+            <hr class="my-4">
+
+            {{-- BMI & Health Section --}}
+            <h3 class="fw-bold mb-3" id="bmi-section"><i class="bi bi-heart-pulse me-2 text-danger"></i> BMI & Health Information</h3>
+            @if($donor->getBMI())
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-0 rounded-4 h-100">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-speedometer2 display-4 text-{{ $donor->getBMIColor() }} mb-3"></i>
+                                <h5 class="card-title text-muted text-uppercase mb-1 small">Your BMI</h5>
+                                <h1 class="fw-bold text-{{ $donor->getBMIColor() }} mb-2">{{ $donor->getBMI() }}</h1>
+                                <span class="badge bg-{{ $donor->getBMIColor() }} fs-6 p-2">{{ $donor->getBMICategory() }}</span>
+                                
+                                <div class="mt-4">
+                                    <div class="progress" style="height: 25px;">
+                                        @php
+                                            $bmi = $donor->getBMI();
+                                            $percentage = min(($bmi / 40) * 100, 100);
+                                        @endphp
+                                        <div class="progress-bar bg-{{ $donor->getBMIColor() }}" role="progressbar" 
+                                             style="width: {{ $percentage }}%;" 
+                                             aria-valuenow="{{ $bmi }}" aria-valuemin="0" aria-valuemax="40">
+                                            {{ $bmi }}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2 small text-muted">
+                                        <span>18.5</span>
+                                        <span>25</span>
+                                        <span>30</span>
+                                        <span>40+</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="mt-3 mb-0 small text-muted">
+                                    @if($donor->getBMICategory() === 'Normal')
+                                        <i class="bi bi-check-circle-fill text-success"></i> Your BMI is in the healthy range!
+                                    @elseif($donor->getBMICategory() === 'Underweight')
+                                        <i class="bi bi-info-circle-fill text-warning"></i> Consider gaining weight for optimal health.
+                                    @elseif($donor->getBMICategory() === 'Overweight')
+                                        <i class="bi bi-exclamation-triangle-fill text-warning"></i> Consider maintaining a healthy weight.
+                                    @else
+                                        <i class="bi bi-exclamation-circle-fill text-danger"></i> Please consult a healthcare provider.
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-0 rounded-4 h-100">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3 fw-bold text-primary"><i class="bi bi-info-circle me-2"></i> BMI Categories</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2 pb-2 border-bottom">
+                                        <span class="badge bg-warning text-dark me-2">Underweight</span> 
+                                        <span class="text-muted">BMI < 18.5</span>
+                                    </li>
+                                    <li class="mb-2 pb-2 border-bottom">
+                                        <span class="badge bg-success me-2">Normal</span> 
+                                        <span class="text-muted">BMI 18.5 - 24.9</span>
+                                    </li>
+                                    <li class="mb-2 pb-2 border-bottom">
+                                        <span class="badge bg-warning text-dark me-2">Overweight</span> 
+                                        <span class="text-muted">BMI 25 - 29.9</span>
+                                    </li>
+                                    <li class="mb-0">
+                                        <span class="badge bg-danger me-2">Obese</span> 
+                                        <span class="text-muted">BMI ≥ 30</span>
+                                    </li>
+                                </ul>
+                                
+                                <div class="alert alert-info mt-3 mb-0 rounded-3" role="alert">
+                                    <i class="bi bi-lightbulb-fill me-2"></i>
+                                    <small><strong>Note:</strong> BMI is a screening tool. Consult healthcare providers for complete health assessment.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="alert alert-warning rounded-3 d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">BMI Not Available</h5>
+                        <p class="mb-0">Please update your age, height and weight in your profile to see your BMI calculation.</p>
+                    </div>
+                    <a href="{{ route('donor.profile') }}" class="btn btn-warning ms-auto">Update Now</a>
+                </div>
+            @endif
+
             <hr class="my-4">
 
             {{-- Personal Information Table --}}
@@ -195,6 +325,22 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                         <span class="fw-bold text-muted w-50"><i class="bi bi-droplet me-2 text-primary"></i> Blood Type:</span>
                         <span class="badge bg-danger fs-6 fw-bold p-2 w-50 text-end">{{ $donor->blood_type }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <span class="fw-bold text-muted w-50"><i class="bi bi-gender-ambiguous me-2 text-primary"></i> Gender:</span>
+                        <span class="w-50 text-end">{{ $donor->gender ?? 'N/A' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <span class="fw-bold text-muted w-50"><i class="bi bi-cake2 me-2 text-primary"></i> Age:</span>
+                        <span class="w-50 text-end">{{ $donor->age ? $donor->age . ' years' : 'N/A' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <span class="fw-bold text-muted w-50"><i class="bi bi-arrow-bar-up me-2 text-primary"></i> Height:</span>
+                        <span class="w-50 text-end">{{ $donor->getHeightInFeetAndInches() }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <span class="fw-bold text-muted w-50"><i class="bi bi-clipboard-data me-2 text-primary"></i> Weight:</span>
+                        <span class="w-50 text-end">{{ $donor->weight_kg ? $donor->weight_kg . ' kg' : 'N/A' }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                         <span class="fw-bold text-muted w-50"><i class="bi bi-calendar-event me-2 text-primary"></i> Member Since:</span>
@@ -281,38 +427,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const availabilitySwitch = document.getElementById('dashboard_is_available');
     const availabilityText = document.getElementById('availabilityText');
     
-    // --- Availability Toggle Logic (Existing) ---
     function updateAvailabilityDisplay(isChecked) {
-        // Toggle the text content
         availabilityText.textContent = isChecked ? 'Available' : 'Not Available';
-
-        // Toggle text color class
         availabilityText.classList.toggle('text-success', isChecked);
         availabilityText.classList.toggle('text-secondary', !isChecked);
 
-        // Toggle icon color class
         const icon = availabilitySwitch.closest('.card-body').querySelector('.bi-heart-pulse-fill');
         icon.classList.toggle('text-success', isChecked);
         icon.classList.toggle('text-secondary', !isChecked);
     }
     
-    // Attach event listener to the switch
     availabilitySwitch.addEventListener('change', function() {
         updateAvailabilityDisplay(this.checked);
-        
-        // NOTE: The form submission logic was removed as the route 
-        // ('donor.profile.updateAvailability') is not defined in the provided 
-        // files. To actually update the status in the database, a user must 
-        // visit the full profile page OR a dedicated AJAX endpoint needs 
-        // to be set up.
-        console.log('Availability toggled. Please click "Update Status on Profile" to make it permanent.');
     });
 
-    // Initialize display state on load
     updateAvailabilityDisplay(availabilitySwitch.checked);
 
-
-    // --- Last Donation Quick Update Logic (NEW) ---
     const lastDonationInput = document.getElementById('last_donation_date_input');
     const lastDonationDisplay = document.getElementById('last_donation_display');
     const editDateBtn = document.getElementById('edit_date_btn');
@@ -320,40 +450,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultRecordBtn = document.getElementById('default_record_btn');
     
     editDateBtn.addEventListener('click', function() {
-        // Hide display and "Record New" button
         lastDonationDisplay.classList.add('d-none');
         defaultRecordBtn.classList.add('d-none');
-        
-        // Show the date input and "Save" button
         lastDonationInput.classList.remove('d-none');
         saveDateBtn.classList.remove('d-none');
-        
-        // Focus the input to open the date picker immediately
         lastDonationInput.focus();
-        
-        // Ensure the input field value is set correctly when opened, 
-        // so clicking 'Save' without changing the date still works.
         lastDonationInput.value = lastDonationInput.value || '{{ $donor->last_donation_date?->format('Y-m-d') }}';
     });
     
-    // Optional: Hide input if user clicks away or presses escape (better UX)
     lastDonationInput.addEventListener('blur', function() {
-        // We will only hide if the input is empty (meaning they effectively canceled the change)
         if (lastDonationInput.value === '') {
-            // Revert display to original state
             lastDonationInput.classList.add('d-none');
             saveDateBtn.classList.add('d-none');
             lastDonationDisplay.classList.remove('d-none');
             defaultRecordBtn.classList.remove('d-none');
         }
     });
-
-    // Submitting the form will send only the 'last_donation_date' field, 
-    // which should be handled by the controller's update logic.
-
 });
 </script>
 @endpush
-
 
 @endsection

@@ -71,9 +71,13 @@ class DonorController extends Controller
             // Hash the password
             $validated['password'] = Hash::make($validated['password']);
 
-            // Set default values
+            // Set default values for new fields (to be updated later in profile)
             $validated['is_available'] = true;
             $validated['last_donation_date'] = null;
+            $validated['gender'] = null;
+            $validated['height_cm'] = null;
+            $validated['weight_kg'] = null;
+            $validated['age'] = null; // Age field - can be added later in profile
 
             // Create the donor
             $donor = Donor::create($validated);
@@ -83,7 +87,7 @@ class DonorController extends Controller
 
             // Redirect to dashboard with success message
             return redirect()->route('donor.dashboard')
-                ->with('success', 'Registration successful! Welcome to Blood Donor Finder, ' . $donor->name . '!');
+                ->with('success', 'Registration successful! Welcome to JnU LifeDrop, ' . $donor->name . '! Please complete your profile with age, height, and weight to see your BMI and eligibility status.');
 
         } catch (ValidationException $e) {
             // Validation errors - Laravel handles this automatically
@@ -155,6 +159,15 @@ class DonorController extends Controller
                 $request->session()->regenerate();
                 
                 $donor = Auth::guard('web')->user();
+                
+                // Check if profile is incomplete
+                $profileIncomplete = !$donor->age || !$donor->gender || !$donor->height_cm || !$donor->weight_kg;
+                
+                if ($profileIncomplete) {
+                    return redirect()->route('donor.dashboard')
+                        ->with('success', 'Welcome back, ' . $donor->name . '! Please complete your profile to see your BMI and full eligibility status.');
+                }
+                
                 return redirect()->route('donor.dashboard')
                     ->with('success', 'Welcome back, ' . $donor->name . '!');
             }
@@ -235,16 +248,68 @@ class DonorController extends Controller
                 'blood_type' => 'required|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
                 'is_available' => 'nullable|boolean',
                 'last_donation_date' => 'nullable|date|before_or_equal:today',
+                
+                // Physical stats validation
+                'gender' => 'required|in:Male,Female,Other',
+                'weight_kg' => 'required|integer|min:45|max:200',
+                'height_cm' => 'required|integer|min:120|max:250',
+                
+                // Age validation
+                'age' => 'required|integer|min:18|max:65',
             ], [
+                // Custom error messages
+                'name.required' => 'Please enter your full name.',
+                'name.max' => 'Name cannot exceed 255 characters.',
+                
+                'phone.required' => 'Please enter your phone number.',
                 'phone.regex' => 'Phone number must be in the format: 01XXXXXXXXX (11 digits starting with 01)',
                 'phone.unique' => 'This phone number is already registered to another donor.',
+                
+                'address.required' => 'Please enter your address.',
+                'address.max' => 'Address cannot exceed 500 characters.',
+                
+                'division.required' => 'Please select your division.',
+                'district.required' => 'Please select your district.',
+                'upazila.required' => 'Please select your upazila.',
+                
+                'blood_type.required' => 'Please select your blood type.',
+                'blood_type.in' => 'Invalid blood type selected.',
+                
+                'last_donation_date.date' => 'Please enter a valid date.',
                 'last_donation_date.before_or_equal' => 'Last donation date cannot be in the future.',
+                
+                'gender.required' => 'Please select your gender.',
+                'gender.in' => 'Invalid gender selected.',
+                
+                'weight_kg.required' => 'Weight is required to calculate your BMI and eligibility.',
+                'weight_kg.integer' => 'Weight must be a whole number.',
+                'weight_kg.min' => 'Weight must be at least 45 kg to be considered for blood donation.',
+                'weight_kg.max' => 'Please enter a valid weight (maximum 200 kg).',
+                
+                'height_cm.required' => 'Height is required to calculate your BMI.',
+                'height_cm.integer' => 'Height must be a whole number.',
+                'height_cm.min' => 'Please enter a valid height (minimum 120 cm).',
+                'height_cm.max' => 'Please enter a valid height (maximum 250 cm).',
+                
+                'age.required' => 'Please enter your age.',
+                'age.integer' => 'Age must be a whole number.',
+                'age.min' => 'You must be at least 18 years old to donate blood.',
+                'age.max' => 'Blood donors must be 65 years old or younger as per health guidelines.',
             ]);
 
-            // Handle checkbox
+            // Handle checkbox - convert to boolean
             $validated['is_available'] = $request->has('is_available') ? true : false;
 
+            // Update the donor profile
             $donor->update($validated);
+
+            // Calculate BMI for success message
+            $bmi = $donor->getBMI();
+            $bmiCategory = $donor->getBMICategory();
+            
+            if ($bmi) {
+                return back()->with('success', 'Profile updated successfully! Your BMI is ' . $bmi . ' (' . $bmiCategory . ').');
+            }
 
             return back()->with('success', 'Profile updated successfully!');
 
@@ -255,10 +320,11 @@ class DonorController extends Controller
             Log::error('Profile Update Error', [
                 'error' => $e->getMessage(),
                 'donor_id' => $donor->id,
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return back()->withErrors([
-                'error' => 'Profile update failed: ' . $e->getMessage()
+                'error' => 'Profile update failed: ' . $e->getMessage() . '. Please try again.'
             ])->withInput();
         }
     }

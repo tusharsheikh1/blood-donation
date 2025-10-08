@@ -19,6 +19,7 @@ class BloodRequest extends Model
         'needed_date',
         'hospital_name',
         'hospital_location',
+        'hospital_map_link', // <-- ADDED
         'division',
         'district',
         'upazila',

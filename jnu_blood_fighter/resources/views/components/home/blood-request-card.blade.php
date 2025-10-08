@@ -251,7 +251,15 @@
             {{-- Location (Pin icon) --}}
             <div class="request-detail-line">
                 <i class="bi bi-geo-alt-fill"></i>
-                <span>Location: <strong>{{ $request->hospital_location }}, {{ $request->upazila }}, {{ $request->district }}</strong></span>
+                <span>
+                    Location: 
+                    <strong>{{ $request->hospital_location }}, {{ $request->upazila }}, {{ $request->district }}</strong>
+                    @if($request->hospital_map_link)
+                        <a href="{{ $request->hospital_map_link }}" target="_blank" class="badge bg-primary ms-2 text-decoration-none" style="font-weight: 500;">
+                            <i class="bi bi-pin-map-fill me-1"></i> View Map {{-- UPDATED ICON --}}
+                        </a>
+                    @endif
+                </span>
             </div>
 
             {{-- Needed By Date (Calendar icon) --}}
