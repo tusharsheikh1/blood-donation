@@ -18,56 +18,74 @@
         </div>
     @endif
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-people-fill"></i> Manage Donors</h2>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Dashboard
-        </a>
-    </div>
-
     <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-search"></i> Filter Donors</h5>
+            @if(request()->anyFilled(['search', 'blood_type', 'division', 'district', 'upazila', 'available']))
+                <a href="{{ route('admin.donors') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle"></i> Clear Filters
+                </a>
+            @endif
+        </div>
         <div class="card-body">
-            <h6 class="mb-3"><i class="bi bi-funnel"></i> Filter Donors</h6>
             <form method="GET" action="{{ route('admin.donors') }}">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            class="form-control" 
-                            placeholder="Search by name, email, or phone" 
-                            value="{{ request('search') }}"
-                        >
+                        <label class="form-label">Search (Name / Email / Phone)</label>
+                        <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="e.g. Rahim, 017..., rahim@mail.com">
                     </div>
                     <div class="col-md-2">
-                        <select name="blood_type" class="form-select">
-                            <option value="">All Blood Types</option>
-                            @foreach(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $type)
-                                <option value="{{ $type }}" {{ request('blood_type') == $type ? 'selected' : '' }}>
-                                    {{ $type }}
-                                </option>
+                        <label class="form-label">Blood Type</label>
+                        <select class="form-select" name="blood_type">
+                            <option value="">Any</option>
+                            @foreach(['A+','A-','B+','B-','O+','O-','AB+','AB-'] as $bt)
+                                <option value="{{ $bt }}" @selected(request('blood_type')===$bt)>{{ $bt }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <select name="division" class="form-select">
-                            <option value="">All Divisions</option>
-                            @foreach(['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'] as $division)
-                                <option value="{{ $division }}" {{ request('division') == $division ? 'selected' : '' }}>
-                                    {{ $division }}
-                                </option>
+                    <div class="col-md-2">
+                        <label class="form-label">Availability</label>
+                        <select class="form-select" name="available">
+                            <option value="">Any</option>
+                            <option value="1" @selected(request('available')==='1')>Available</option>
+                            <option value="0" @selected(request('available')==='0')>Not Available</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Division</label>
+                        <select class="form-select" name="division" id="division">
+                            <option value="">Any</option>
+                            @foreach(($divisions ?? []) as $div)
+                                <option value="{{ $div['en'] }}" @selected(request('division')===$div['en'])>{{ $div['en'] }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-fill">
-                                <i class="bi bi-search"></i> Search
-                            </button>
-                            <a href="{{ route('admin.donors') }}" class="btn btn-secondary" title="Clear filters">
-                                <i class="bi bi-x-lg"></i>
-                            </a>
-                        </div>
+                    <div class="col-md-2">
+                        <label class="form-label">District</label>
+                        <select class="form-select" name="district" id="district">
+                            <option value="">Any</option>
+                            @if(request('district'))
+                                <option selected>{{ request('district') }}</option>
+                            @endif
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Upazila</label>
+                        <select class="form-select" name="upazila" id="upazila">
+                            <option value="">Any</option>
+                            @if(request('upazila'))
+                                <option selected>{{ request('upazila') }}</option>
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 d-flex gap-2">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> Apply
+                        </button>
+                        <a href="{{ route('admin.donors') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </a>
                     </div>
                 </div>
             </form>
@@ -77,11 +95,16 @@
     <div class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <h5 class="mb-0">All Donors ({{ $donors->total() }})</h5>
-            @if(request()->hasAny(['search', 'blood_type', 'division']))
-                <span class="badge bg-info">
-                    <i class="bi bi-funnel-fill"></i> Filters Active
-                </span>
-            @endif
+            <div class="d-flex align-items-center gap-2">
+                @if(request()->hasAny(['search', 'blood_type', 'division']))
+                    <span class="badge bg-info">
+                        <i class="bi bi-funnel-fill"></i> Filters Active
+                    </span>
+                @endif
+                <a href="{{ route('admin.donors.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Donor
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -89,53 +112,67 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
+                            <th>Donor</th>
                             <th>Blood</th>
+                            <th>Contact</th>
                             <th>Location</th>
-                            <th>Status</th>
+                            <th>Availability</th>
                             <th>Last Donation</th>
-                            <th>Actions</th>
+                            <th>Stats</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($donors as $donor)
+                        @forelse($donors as $index => $donor)
                             <tr>
-                                <td>{{ $donor->id }}</td>
-                                <td>{{ $donor->name }}</td>
-                                <td><a href="mailto:{{ $donor->email }}">{{ $donor->email }}</a></td>
-                                <td><a href="tel:{{ $donor->phone }}">{{ $donor->phone }}</a></td>
-                                <td><span class="badge bg-danger">{{ $donor->blood_type }}</span></td>
+                                <td>{{ $donors->firstItem() + $index }}</td>
                                 <td>
-                                    <small>
-                                        {{ $donor->upazila }}<br>
-                                        {{ $donor->district }}, {{ $donor->division }}
-                                    </small>
+                                    <div class="fw-semibold">{{ $donor->name }}</div>
+                                    <div class="text-muted small">{{ $donor->email }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger-subtle text-danger fw-semibold">{{ $donor->blood_type }}</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <a href="tel:{{ $donor->phone }}">{{ $donor->phone }}</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        {{ $donor->upazila ? $donor->upazila . ', ' : '' }}
+                                        {{ $donor->district ? $donor->district . ', ' : '' }}
+                                        {{ $donor->division }}
+                                    </div>
                                 </td>
                                 <td>
                                     @if($donor->is_available)
-                                        <span class="badge bg-success">Available</span>
+                                        <span class="badge bg-success"><i class="bi bi-check2-circle"></i> Available</span>
                                     @else
-                                        <span class="badge bg-secondary">Unavailable</span>
+                                        <span class="badge bg-secondary"><i class="bi bi-slash-circle"></i> Not Available</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($donor->last_donation_date)
-                                        <small>{{ $donor->last_donation_date->format('M d, Y') }}</small>
-                                    @else
-                                        <span class="text-muted">Never</span>
-                                    @endif
+                                    <div class="small">
+                                        {{ $donor->last_donation_date ? \Carbon\Carbon::parse($donor->last_donation_date)->format('d M Y') : '—' }}
+                                    </div>
                                 </td>
                                 <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.donors.edit', $donor->id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <div class="small text-muted">
+                                        Age: {{ $donor->age ?? '—' }} |
+                                        H: {{ $donor->height_cm ? $donor->height_cm . ' cm' : '—' }} |
+                                        W: {{ $donor->weight_kg ? $donor->weight_kg . ' kg' : '—' }}
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a href="{{ route('admin.donors.edit', $donor->id) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('admin.donors.delete', $donor->id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{ $donor->name }}? This action cannot be undone.')">
+                                        <form action="{{ route('admin.donors.delete', $donor->id) }}" method="POST" onsubmit="return confirm('Delete this donor?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -144,15 +181,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4">
-                                    <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
-                                    <p class="text-muted mb-0">
-                                        @if(request()->hasAny(['search', 'blood_type', 'division']))
-                                            No donors found matching your criteria. <a href="{{ route('admin.donors') }}">Clear filters</a>
-                                        @else
-                                            No donors registered yet.
-                                        @endif
-                                    </p>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="bi bi-inboxes"></i> No donors found.
                                 </td>
                             </tr>
                         @endforelse
@@ -169,3 +199,53 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    const division = document.getElementById('division');
+    const district = document.getElementById('district');
+    const upazila  = document.getElementById('upazila');
+
+    async function fetchJSON(url) {
+        try {
+            const res = await fetch(url);
+            return await res.json();
+        } catch (e) {
+            return [];
+        }
+    }
+
+    if (division) {
+        division.addEventListener('change', async function () {
+            const div = this.value;
+            district.innerHTML = '<option value="">Any</option>';
+            upazila.innerHTML = '<option value="">Any</option>';
+            if (!div) return;
+
+            const items = await fetchJSON(`/api/districts/${encodeURIComponent(div)}`);
+            (Array.isArray(items) ? items : []).forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d; opt.textContent = d;
+                district.appendChild(opt);
+            });
+        });
+    }
+
+    if (district) {
+        district.addEventListener('change', async function () {
+            const dist = this.value;
+            upazila.innerHTML = '<option value="">Any</option>';
+            if (!dist) return;
+
+            const items = await fetchJSON(`/api/upazilas/${encodeURIComponent(dist)}`);
+            (Array.isArray(items) ? items : []).forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u; opt.textContent = u;
+                upazila.appendChild(opt);
+            });
+        });
+    }
+})();
+</script>
+@endpush

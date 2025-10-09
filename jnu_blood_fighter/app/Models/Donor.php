@@ -12,9 +12,9 @@ class Donor extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Mass-assignable attributes.
      *
-     * @var array<int, string>
+     * Keep existing intake; email/password remain present but can be null.
      */
     protected $fillable = [
         'name',
@@ -35,9 +35,15 @@ class Donor extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Default attribute values.
+     * Ensures new donors default to not available unless explicitly set.
+     */
+    protected $attributes = [
+        'is_available' => false,
+    ];
+
+    /**
+     * Hidden attributes for arrays / JSON.
      */
     protected $hidden = [
         'password',
@@ -45,24 +51,22 @@ class Donor extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Attribute casting.
+     * - 'password' => 'hashed' automatically hashes on set (and allows null).
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at'  => 'datetime',
         'last_donation_date' => 'date',
-        'is_available' => 'boolean',
-        'height_cm' => 'integer',
-        'weight_kg' => 'integer',
-        'age' => 'integer',
+        'is_available'       => 'boolean',
+        'height_cm'          => 'integer',
+        'weight_kg'          => 'integer',
+        'age'                => 'integer',
+        'password'           => 'hashed',   // <-- added
     ];
 
     /**
      * Send the password reset notification.
-     *
-     * @param  string  $token
-     * @return void
+     * (Safe to keep even if most donors won't log in.)
      */
     public function sendPasswordResetNotification($token)
     {
@@ -71,158 +75,131 @@ class Donor extends Authenticatable
 
     /**
      * Check if donor can donate (3 months since last donation)
-     *
-     * @return bool
      */
     public function canDonate(): bool
     {
         if (!$this->last_donation_date) {
             return true;
         }
-        
-        return $this->last_donation_date->addMonths(3)->isPast();
+
+        return $this->last_donation_date->copy()->addMonths(3)->isPast();
     }
 
     /**
      * Get height in feet and inches format
-     *
-     * @return string
      */
     public function getHeightInFeetAndInches(): string
     {
         if (!$this->height_cm) {
             return 'N/A';
         }
-        
-        $totalInches = round($this->height_cm / 2.54);
-        $feet = floor($totalInches / 12);
+
+        $totalInches = (int) round($this->height_cm / 2.54);
+        $feet = (int) floor($totalInches / 12);
         $inches = $totalInches % 12;
-        
+
         return "{$feet}' {$inches}\"";
     }
 
     /**
      * Calculate BMI (Body Mass Index)
-     *
-     * @return float|null
      */
     public function getBMI(): ?float
     {
         if (!$this->weight_kg || !$this->height_cm) {
             return null;
         }
-        
+
         $heightInMeters = $this->height_cm / 100;
         $bmi = $this->weight_kg / ($heightInMeters * $heightInMeters);
-        
+
         return round($bmi, 1);
     }
 
     /**
      * Get BMI category based on WHO standards
-     *
-     * @return string
      */
     public function getBMICategory(): string
     {
         $bmi = $this->getBMI();
-        
+
         if ($bmi === null) {
             return 'Unknown';
         }
-        
+
         if ($bmi < 18.5) {
             return 'Underweight';
-        } elseif ($bmi >= 18.5 && $bmi < 25) {
+        } elseif ($bmi < 25) {
             return 'Normal';
-        } elseif ($bmi >= 25 && $bmi < 30) {
+        } elseif ($bmi < 30) {
             return 'Overweight';
-        } else {
-            return 'Obese';
         }
+
+        return 'Obese';
     }
 
     /**
      * Get BMI status color for UI (Bootstrap colors)
-     *
-     * @return string
      */
     public function getBMIColor(): string
     {
-        $category = $this->getBMICategory();
-        
-        return match($category) {
+        return match ($this->getBMICategory()) {
             'Underweight' => 'warning',
-            'Normal' => 'success',
-            'Overweight' => 'warning',
-            'Obese' => 'danger',
-            default => 'secondary',
+            'Normal'      => 'success',
+            'Overweight'  => 'warning',
+            'Obese'       => 'danger',
+            default       => 'secondary',
         };
     }
 
     /**
      * Get BMI health recommendation
-     *
-     * @return string
      */
     public function getBMIRecommendation(): string
     {
-        $category = $this->getBMICategory();
-        
-        return match($category) {
+        return match ($this->getBMICategory()) {
             'Underweight' => 'Consider consulting a healthcare provider about healthy weight gain.',
-            'Normal' => 'Your BMI is in the healthy range! Keep up the good work.',
-            'Overweight' => 'Consider adopting a healthier lifestyle with balanced diet and exercise.',
-            'Obese' => 'Please consult a healthcare provider for personalized health guidance.',
-            default => 'Complete your profile to calculate your BMI.',
+            'Normal'      => 'Your BMI is in the healthy range! Keep up the good work.',
+            'Overweight'  => 'Consider adopting a healthier lifestyle with balanced diet and exercise.',
+            'Obese'       => 'Please consult a healthcare provider for personalized health guidance.',
+            default       => 'Complete your profile to calculate your BMI.',
         };
     }
 
     /**
      * Check if donor has complete health profile
-     *
-     * @return bool
      */
     public function hasCompleteHealthProfile(): bool
     {
-        return $this->gender 
-            && $this->age 
-            && $this->height_cm 
-            && $this->weight_kg;
+        return (bool) ($this->gender && $this->age && $this->height_cm && $this->weight_kg);
     }
 
     /**
      * Check if donor is eligible to donate based on age
-     *
-     * @return bool
      */
     public function isAgeEligible(): bool
     {
         if (!$this->age) {
             return false;
         }
-        
+
         return $this->age >= 18 && $this->age <= 65;
     }
 
     /**
      * Check if donor meets weight requirement (minimum 45 kg)
-     *
-     * @return bool
      */
     public function meetsWeightRequirement(): bool
     {
         if (!$this->weight_kg) {
             return false;
         }
-        
+
         return $this->weight_kg >= 45;
     }
 
     /**
      * Get comprehensive eligibility status
-     *
-     * @return array
      */
     public function getEligibilityStatus(): array
     {
@@ -255,14 +232,14 @@ class Donor extends Authenticatable
         if (!$this->canDonate()) {
             $eligible = false;
             $nextDate = $this->last_donation_date?->copy()->addMonths(3);
-            $reasons[] = 'Must wait 3 months between donations (next eligible: ' . 
-                        ($nextDate ? $nextDate->format('M d, Y') : 'N/A') . ')';
+            $reasons[] = 'Must wait 3 months between donations (next eligible: ' .
+                ($nextDate ? $nextDate->format('M d, Y') : 'N/A') . ')';
         }
 
         return [
             'eligible' => $eligible,
-            'reasons' => $reasons,
-            'message' => $eligible ? 'You are eligible to donate blood!' : 'Not currently eligible',
+            'reasons'  => $reasons,
+            'message'  => $eligible ? 'You are eligible to donate blood!' : 'Not currently eligible',
         ];
     }
 

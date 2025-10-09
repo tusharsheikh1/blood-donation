@@ -58,13 +58,19 @@ Route::prefix('admin')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login']);
     });
 
-    // Protected admin routes
-    Route::middleware('auth:admin')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('/donors', [DashboardController::class, 'donors'])->name('admin.donors');
-        Route::get('/donors/{id}/edit', [DashboardController::class, 'editDonor'])->name('admin.donors.edit');
-        Route::post('/donors/{id}', [DashboardController::class, 'updateDonor'])->name('admin.donors.update');
-        Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-    });
+   // Protected admin routes
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/donors', [DashboardController::class, 'donors'])->name('admin.donors');
+
+    // NEW
+    Route::get('/donors/create', [DashboardController::class, 'createDonor'])->name('admin.donors.create');
+    Route::post('/donors', [DashboardController::class, 'storeDonor'])->name('admin.donors.store');
+
+    Route::get('/donors/{id}/edit', [DashboardController::class, 'editDonor'])->name('admin.donors.edit');
+    Route::post('/donors/{id}', [DashboardController::class, 'updateDonor'])->name('admin.donors.update');
+    Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+});
+
 });
