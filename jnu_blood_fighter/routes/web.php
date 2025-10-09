@@ -6,6 +6,8 @@ use App\Http\Controllers\DonorController;
 use App\Http\Controllers\BloodRequestController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -18,6 +20,12 @@ Route::prefix('donor')->group(function () {
         Route::post('/register', [DonorController::class, 'register']);
         Route::get('/login', [DonorController::class, 'showLogin'])->name('donor.login');
         Route::post('/login', [DonorController::class, 'login']);
+        
+        // Password Reset Routes
+        Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('donor.password.request');
+        Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('donor.password.email');
+        Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('donor.password.reset');
+        Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('donor.password.update');
     });
 
     // Authenticated donor routes
@@ -59,4 +67,4 @@ Route::prefix('admin')->group(function () {
         Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
-});//
+});

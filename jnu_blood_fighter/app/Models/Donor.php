@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\DonorResetPasswordNotification;
 
 class Donor extends Authenticatable
 {
@@ -58,6 +59,17 @@ class Donor extends Authenticatable
     ];
 
     /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new DonorResetPasswordNotification($token));
+    }
+
+    /**
      * Check if donor can donate (3 months since last donation)
      *
      * @return bool
@@ -82,10 +94,7 @@ class Donor extends Authenticatable
             return 'N/A';
         }
         
-        // Convert cm to total inches (1 inch = 2.54 cm)
         $totalInches = round($this->height_cm / 2.54);
-        
-        // Calculate feet and remaining inches
         $feet = floor($totalInches / 12);
         $inches = $totalInches % 12;
         
@@ -94,7 +103,6 @@ class Donor extends Authenticatable
 
     /**
      * Calculate BMI (Body Mass Index)
-     * Formula: BMI = weight (kg) / (height (m))^2
      *
      * @return float|null
      */
@@ -104,13 +112,9 @@ class Donor extends Authenticatable
             return null;
         }
         
-        // Convert height from cm to meters
         $heightInMeters = $this->height_cm / 100;
-        
-        // Calculate BMI
         $bmi = $this->weight_kg / ($heightInMeters * $heightInMeters);
         
-        // Round to 1 decimal place
         return round($bmi, 1);
     }
 
@@ -225,13 +229,11 @@ class Donor extends Authenticatable
         $eligible = true;
         $reasons = [];
 
-        // Check profile completion
         if (!$this->hasCompleteHealthProfile()) {
             $eligible = false;
             $reasons[] = 'Complete your health profile (age, gender, height, weight)';
         }
 
-        // Check age eligibility
         if (!$this->isAgeEligible()) {
             $eligible = false;
             if (!$this->age) {
@@ -241,7 +243,6 @@ class Donor extends Authenticatable
             }
         }
 
-        // Check weight requirement
         if (!$this->meetsWeightRequirement()) {
             $eligible = false;
             if (!$this->weight_kg) {
@@ -251,7 +252,6 @@ class Donor extends Authenticatable
             }
         }
 
-        // Check donation interval
         if (!$this->canDonate()) {
             $eligible = false;
             $nextDate = $this->last_donation_date?->copy()->addMonths(3);
