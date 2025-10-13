@@ -405,16 +405,18 @@
             <div class="container-fluid">
                 <div class="row w-100 g-0">
                     <div class="col text-center">
-                        <a class="nav-link p-2 text-dark" href="{{ route('donor.dashboard') }}" aria-label="Dashboard">
-                            <i class="bi bi-grid-fill d-block fs-5"></i>
-                            <small>Home</small>
-                        </a>
+                        <a class="nav-link p-2 text-dark" href="{{ url('/') }}" aria-label="Home">
+    <i class="bi bi-grid-fill d-block fs-5"></i>
+    <small>Home</small>
+</a>
+
                     </div>
                     <div class="col text-center">
-                        <a class="nav-link p-2 text-danger" href="{{ route('blood-request.create') }}" aria-label="Request Blood">
-                            <i class="bi bi-megaphone-fill d-block fs-5"></i>
-                            <small>Request</small>
-                        </a>
+                        <a class="nav-link p-2 text-dark" href="{{ route('donor.dashboard') }}" aria-label="Dashboard">
+    <i class="bi bi-speedometer2 d-block fs-5"></i>
+    <small>Dashboard</small>
+</a>
+
                     </div>
                     <div class="col text-center">
                         <a class="nav-link p-2 text-primary" href="{{ route('blood-request.my-requests') }}" aria-label="My Requests">

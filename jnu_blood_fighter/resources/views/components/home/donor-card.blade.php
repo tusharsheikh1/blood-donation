@@ -151,7 +151,7 @@
 }
 
 
-/* Donor Action - Call Button (Full Width Bottom) */
+/* Donor Action - Contact Button (Full Width Bottom) */
 .donor-action {
     text-align: center;
     min-width: 100%;
@@ -170,15 +170,27 @@
     transition: all 0.3s ease;
     display: block;
     font-size: 1rem;
+    text-decoration: none;
 }
 
 .btn-call:hover {
+    color: white;
     box-shadow: 0 6px 15px rgba(40, 167, 69, 0.5);
     transform: translateY(-1px) scale(1.01);
 }
 
 .btn-call i {
     margin-right: 0.5rem;
+}
+
+/* Email button variant */
+.btn-email {
+    background: linear-gradient(45deg, #007bff 0%, #0056b3 100%);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.btn-email:hover {
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5);
 }
 
 
@@ -283,11 +295,20 @@
         </div>
     </div>
     
-    {{-- BOTTOM ROW: Donor Action - Call Button --}}
+    {{-- BOTTOM ROW: Donor Action - Contact Button (Phone or Email based on preference) --}}
     <div class="donor-action">
-        <a href="tel:{{ $donor->phone }}" class="btn btn-call">
-            <i class="bi bi-telephone-fill"></i>
-            <span>Call: {{ $donor->phone }}</span> 
-        </a>
+        @if($donor->share_phone)
+            {{-- Show Phone Number --}}
+            <a href="tel:{{ $donor->phone }}" class="btn btn-call">
+                <i class="bi bi-telephone-fill"></i>
+                <span>Call: {{ $donor->phone }}</span> 
+            </a>
+        @else
+            {{-- Show Email Address --}}
+            <a href="mailto:{{ $donor->email }}" class="btn btn-call btn-email">
+                <i class="bi bi-envelope-fill"></i>
+                <span>Email: {{ $donor->email }}</span> 
+            </a>
+        @endif
     </div>
 </div>

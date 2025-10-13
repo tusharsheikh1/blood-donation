@@ -73,6 +73,7 @@ class DonorController extends Controller
 
             // Set default values for new fields (to be updated later in profile)
             $validated['is_available'] = true;
+            $validated['share_phone'] = true; // Default to sharing phone number
             $validated['last_donation_date'] = null;
             $validated['gender'] = null;
             $validated['height_cm'] = null;
@@ -247,6 +248,7 @@ class DonorController extends Controller
                 'upazila' => 'required|string|max:255',
                 'blood_type' => 'required|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
                 'is_available' => 'nullable|boolean',
+                'share_phone' => 'nullable|boolean',
                 'last_donation_date' => 'nullable|date|before_or_equal:today',
                 
                 // Physical stats validation
@@ -299,6 +301,7 @@ class DonorController extends Controller
 
             // Handle checkbox - convert to boolean
             $validated['is_available'] = $request->has('is_available') ? true : false;
+            $validated['share_phone'] = $request->has('share_phone') ? true : false;
 
             // Update the donor profile
             $donor->update($validated);

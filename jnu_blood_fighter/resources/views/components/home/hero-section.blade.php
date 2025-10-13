@@ -28,20 +28,21 @@
     height: 150px;
 }
 
+/* UPDATED WAVE COLORS TO MATCH BODY BACKGROUND (#e9ecef) */
 .wave-path-1 {
-    fill: #f8f9fa;
-    opacity: 0.3;
+    fill: #e9ecef; /* Matches body background end color */
+    opacity: 0.5;
     animation: wave-animation-1 15s ease-in-out infinite;
 }
 
 .wave-path-2 {
-    fill: #f8f9fa;
-    opacity: 0.5;
+    fill: #e9ecef; /* Matches body background end color */
+    opacity: 0.7;
     animation: wave-animation-2 12s ease-in-out infinite;
 }
 
 .wave-path-3 {
-    fill: #f8f9fa;
+    fill: #e9ecef; /* Matches body background end color for a seamless blend */
     animation: wave-animation-3 10s ease-in-out infinite;
 }
 
@@ -240,7 +241,7 @@
 }
 
 .hero-title-gradient {
-    background: linear-gradient(to right, #ffffff 0%, #f8d7da 100%);
+    background: linear-gradient(to right, #f1f1f1 0%, #f8d7da 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -327,7 +328,7 @@
 }
 
 .btn-hero-primary {
-    background: white;
+    background: #f1f1f1;
     color: #dc3545;
 }
 
@@ -386,7 +387,7 @@
 }
 
 .demo-donor-card {
-    background: white;
+    background: #f1f1f1;
     border-radius: 24px;
     padding: 1.75rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -660,7 +661,6 @@
 </style>
 
 <section class="hero-section">
-    <!-- Animated Wave Design -->
     <div class="wave-container">
         <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path class="wave-path-1" d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
@@ -669,7 +669,6 @@
         </svg>
     </div>
     
-    <!-- Animated Particles -->
     <div class="particle"></div>
     <div class="particle"></div>
     <div class="particle"></div>
@@ -678,28 +677,23 @@
     
     <div class="container">
         <div class="row align-items-center">
-            <!-- Left Column: Content -->
             <div class="col-lg-7">
                 <div class="hero-content">
-                    <!-- Live Status Badge -->
                     <div class="live-badge">
                         <span class="live-indicator"></span>
                         <span>Trusted by 1000+ Life Savers</span>
                         <span class="badge bg-light text-danger ms-2 fw-bold">LIVE</span>
                     </div>
 
-                    <!-- Main Headline -->
                     <h1 class="hero-title">
                         Find Blood Donors
                         <span class="d-block hero-title-gradient">Instantly</span>
                     </h1>
 
-                    <!-- Description -->
                     <p class="hero-description">
                         Connect with verified blood donors in seconds. Our AI-powered platform matches you with the nearest donors based on blood type and location.
                     </p>
 
-                    <!-- Feature Pills -->
                     <div class="feature-pills">
                         <div class="feature-pill">
                             <i class="bi bi-lightning-charge-fill"></i>
@@ -711,7 +705,7 @@
                         </div>
                     </div>
 
-                    <!-- Call-to-Action Buttons -->
+                    @guest
                     <div class="hero-cta">
                         <a href="{{ route('donor.register') }}" class="btn-hero btn-hero-primary">
                             <i class="bi bi-person-plus-fill"></i>
@@ -722,14 +716,13 @@
                             <span>Sign In</span>
                         </a>
                     </div>
+                    @endguest
                 </div>
             </div>
 
-            <!-- Right Column: Demo Donor Card (Desktop Only) -->
             <div class="col-lg-5">
                 <div class="demo-card-wrapper">
                     <div class="demo-donor-card">
-                        <!-- Card Header -->
                         <div class="demo-card-header">
                             <div class="demo-avatar">
                                 👨
@@ -744,7 +737,6 @@
                             <div class="demo-blood-badge">O+</div>
                         </div>
 
-                        <!-- Stats -->
                         <div class="demo-stats">
                             <div class="demo-stat">
                                 <div class="demo-stat-label">Donations</div>
@@ -762,13 +754,11 @@
                             </div>
                         </div>
 
-                        <!-- Availability -->
                         <div class="demo-availability">
                             <i class="bi bi-circle-fill"></i>
                             <span class="demo-availability-text">Available Now</span>
                         </div>
 
-                        <!-- Actions -->
                         <div class="demo-actions">
                             <div class="demo-action-btn">
                                 <div class="demo-action-icon call">

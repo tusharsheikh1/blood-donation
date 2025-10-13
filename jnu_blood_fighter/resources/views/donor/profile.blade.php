@@ -161,8 +161,23 @@
                             <small class="text-muted">House/Flat No, Road, Area</small>
                         </div>
                         
-                        {{-- Availability Switch --}}
-                        <h5 class="text-primary border-bottom pb-2 mb-4 mt-4"><i class="bi bi-heart-pulse-fill me-2"></i> Availability</h5>
+                        {{-- Privacy & Availability --}}
+                        <h5 class="text-primary border-bottom pb-2 mb-4 mt-4"><i class="bi bi-shield-check me-2"></i> Privacy & Availability</h5>
+                        
+                        <div class="mb-4">
+                            <div class="form-check form-switch d-flex align-items-center p-0">
+                                <input class="form-check-input ms-0 me-3" type="checkbox" name="share_phone" id="share_phone" value="1" {{ old('share_phone', $donor->share_phone) ? 'checked' : '' }} style="width: 3.5em; height: 1.8em;">
+                                <label class="form-check-label fw-bold fs-5" for="share_phone">
+                                    Share my <strong id="contact_type_text">{{ $donor->share_phone ? 'phone number' : 'email address' }}</strong> publicly
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                When enabled, your phone number will be visible to people searching for donors. 
+                                When disabled, your email address will be shown instead for privacy.
+                            </small>
+                        </div>
+                        
                         <div class="mb-4">
                             <div class="form-check form-switch d-flex align-items-center p-0">
                                 <input class="form-check-input ms-0 me-3" type="checkbox" name="is_available" id="is_available" value="1" {{ old('is_available', $donor->is_available) ? 'checked' : '' }} style="width: 3.5em; height: 1.8em;">
@@ -170,7 +185,7 @@
                                     I am <strong id="availability_status_text">{{ $donor->is_available ? 'AVAILABLE' : 'NOT AVAILABLE' }}</strong> to donate blood
                                 </label>
                             </div>
-                            <small class="text-muted d-block mt-1">Donors marked as 'Available' are prioritized for blood requests.</small>
+                            <small class="text-muted d-block mt-2">Donors marked as 'Available' are prioritized for blood requests.</small>
                         </div>
 
                         {{-- Submit Buttons --}}
@@ -195,6 +210,8 @@ const oldDistrict = '{{ old('district', $donor->district) }}';
 const oldUpazila = '{{ old('upazila', $donor->upazila) }}';
 const isAvailableCheckbox = document.getElementById('is_available');
 const availabilityStatusText = document.getElementById('availability_status_text');
+const sharePhoneCheckbox = document.getElementById('share_phone');
+const contactTypeText = document.getElementById('contact_type_text');
 
 const heightFtSelect = document.getElementById('height_ft');
 const heightInSelect = document.getElementById('height_in');
@@ -238,8 +255,17 @@ function updateAvailabilityLabel() {
     }
 }
 
+function updateContactTypeLabel() {
+    if (sharePhoneCheckbox.checked) {
+        contactTypeText.innerHTML = '<span class="text-primary">phone number</span>';
+    } else {
+        contactTypeText.innerHTML = '<span class="text-info">email address</span>';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     updateAvailabilityLabel();
+    updateContactTypeLabel();
     setInitialHeightDropdowns();
     
     document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
@@ -248,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 isAvailableCheckbox.addEventListener('change', updateAvailabilityLabel);
+sharePhoneCheckbox.addEventListener('change', updateContactTypeLabel);
 
 heightFtSelect.addEventListener('change', convertFtInToCm);
 heightInSelect.addEventListener('change', convertFtInToCm);

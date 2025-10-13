@@ -85,6 +85,7 @@
                             <input type="hidden" name="height_cm" value="{{ $donor->height_cm }}">
                             <input type="hidden" name="weight_kg" value="{{ $donor->weight_kg }}">
                             <input type="hidden" name="age" value="{{ $donor->age }}">
+                            <input type="hidden" name="share_phone" value="{{ $donor->share_phone ? 1 : 0 }}">
 
                             <div class="card-body text-center p-4">
                                 <i class="bi bi-heart-pulse-fill display-4 mb-2 {{ $donor->is_available ? 'text-success' : 'text-secondary' }}"></i>
@@ -117,7 +118,57 @@
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    {{-- Card 2: Last Donation --}}
+                    {{-- Card 2: Privacy/Contact Sharing Status --}}
+                    <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
+                        <form method="POST" action="{{ route('donor.profile.update') }}" id="sharePhoneForm">
+                            @csrf
+                            
+                            <input type="hidden" name="name" value="{{ $donor->name }}">
+                            <input type="hidden" name="phone" value="{{ $donor->phone }}">
+                            <input type="hidden" name="blood_type" value="{{ $donor->blood_type }}">
+                            <input type="hidden" name="division" value="{{ $donor->division }}">
+                            <input type="hidden" name="district" value="{{ $donor->district }}">
+                            <input type="hidden" name="upazila" value="{{ $donor->upazila }}">
+                            <input type="hidden" name="address" value="{{ $donor->address }}">
+                            <input type="hidden" name="last_donation_date" value="{{ $donor->last_donation_date?->format('Y-m-d') }}">
+                            <input type="hidden" name="gender" value="{{ $donor->gender }}">
+                            <input type="hidden" name="height_cm" value="{{ $donor->height_cm }}">
+                            <input type="hidden" name="weight_kg" value="{{ $donor->weight_kg }}">
+                            <input type="hidden" name="age" value="{{ $donor->age }}">
+                            <input type="hidden" name="is_available" value="{{ $donor->is_available ? 1 : 0 }}">
+
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-shield-check-fill display-4 mb-2 {{ $donor->share_phone ? 'text-primary' : 'text-info' }}"></i>
+                                <h5 class="card-title text-muted text-uppercase mb-1 small">Contact Privacy</h5>
+                                <h1 class="fw-bold mb-3 {{ $donor->share_phone ? 'text-primary' : 'text-info' }}" id="sharePhoneText">{{ $donor->share_phone ? 'Phone' : 'Email' }}</h1>
+                                
+                                <div class="form-check form-switch d-flex justify-content-center align-items-center gap-3">
+                                    <label class="form-check-label fw-bold text-muted small" for="dashboard_share_phone">
+                                        Share Phone
+                                    </label>
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="share_phone"
+                                        id="dashboard_share_phone" 
+                                        value="1" 
+                                        {{ $donor->share_phone ? 'checked' : '' }} 
+                                        style="width: 3.5em; height: 1.8em; cursor: pointer;"
+                                        onchange="document.getElementById('sharePhoneForm').submit()"
+                                    >
+                                </div>
+                                
+                                <p class="mt-3 mb-0 small text-muted">
+                                    {{ $donor->share_phone ? 'Your phone number is publicly visible' : 'Your email address is publicly visible' }}
+                                </p>
+                                <a href="{{ route('donor.profile') }}" class="btn btn-sm btn-outline-secondary mt-3 rounded-pill">Privacy Settings</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    {{-- Card 3: Last Donation --}}
                     <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
                         <form method="POST" action="{{ route('donor.profile.update') }}" id="lastDonationForm">
                             @csrf
@@ -134,9 +185,10 @@
                             <input type="hidden" name="height_cm" value="{{ $donor->height_cm }}">
                             <input type="hidden" name="weight_kg" value="{{ $donor->weight_kg }}">
                             <input type="hidden" name="age" value="{{ $donor->age }}">
+                            <input type="hidden" name="share_phone" value="{{ $donor->share_phone ? 1 : 0 }}">
 
                             <div class="card-body text-center p-4">
-                                <i class="bi bi-calendar-check-fill display-4 text-info mb-2"></i>
+                                <i class="bi bi-calendar-check-fill display-4 text-warning mb-2"></i>
                                 <h5 class="card-title text-muted text-uppercase mb-1 small">Last Donation Date</h5>
                                 
                                 <input 
@@ -150,14 +202,14 @@
                                 >
                                 
                                 <div class="d-flex justify-content-center align-items-center mb-2" id="last_donation_display">
-                                    <h1 class="fw-bold mb-0 text-info me-2">
+                                    <h1 class="fw-bold mb-0 text-warning me-2">
                                         @if($donor->last_donation_date)
                                             {{ $donor->last_donation_date->format('M d, Y') }}
                                         @else
                                             Never
                                         @endif
                                     </h1>
-                                    <button type="button" id="edit_date_btn" class="btn btn-sm btn-outline-info rounded-circle p-0" style="width: 25px; height: 25px; line-height: 1;">
+                                    <button type="button" id="edit_date_btn" class="btn btn-sm btn-outline-warning rounded-circle p-0" style="width: 25px; height: 25px; line-height: 1;">
                                         <i class="bi bi-pencil-fill small"></i>
                                     </button>
                                 </div>
@@ -170,43 +222,45 @@
                                     @endif
                                 </p>
 
-                                <button type="submit" id="save_date_btn" class="btn btn-sm btn-info text-white mt-3 rounded-pill d-none">
+                                <button type="submit" id="save_date_btn" class="btn btn-sm btn-warning text-white mt-3 rounded-pill d-none">
                                     Save New Date
                                 </button>
                                 
-                                <a href="{{ route('donor.profile') }}" id="default_record_btn" class="btn btn-sm btn-outline-info mt-3 rounded-pill">Record New</a>
+                                <a href="{{ route('donor.profile') }}" id="default_record_btn" class="btn btn-sm btn-outline-warning mt-3 rounded-pill">Record New</a>
                             </div>
                         </form>
                     </div>
                 </div>
-
-                <div class="col-md-4 mb-4">
-                    {{-- Card 3: Can Donate? --}}
-                    <div class="card bg-white shadow-sm border-0 rounded-4 h-100">
+            </div>
+            
+            {{-- Eligibility Card (moved below the 3 main cards) --}}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card bg-white shadow-sm border-0 rounded-4">
                         <div class="card-body text-center p-4">
                             @php
                                 $canDonate = $donor->canDonate();
                                 $missingInfo = !$donor->gender || !$donor->height_cm || !$donor->weight_kg || !$donor->age;
                             @endphp
                             <i class="bi bi-droplet-half display-4 mb-2 
-                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-warning') }}"></i>
+                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-secondary') }}"></i>
                             
-                            <h5 class="card-title text-muted text-uppercase mb-1 small">Eligibility</h5>
+                            <h5 class="card-title text-muted text-uppercase mb-1 small">Donation Eligibility</h5>
                             <h1 class="fw-bold mb-2 
-                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-warning') }}">
-                                {{ $canDonate && !$missingInfo ? 'Yes' : ($missingInfo ? 'Incomplete' : 'Not Yet') }}
+                                {{ $canDonate && !$missingInfo ? 'text-danger' : ($missingInfo ? 'text-info' : 'text-secondary') }}">
+                                {{ $canDonate && !$missingInfo ? 'Eligible Now' : ($missingInfo ? 'Profile Incomplete' : 'Not Yet Eligible') }}
                             </h1>
-                            <p class="mb-0 small text-muted">
+                            <p class="mb-0 text-muted">
                                 @if($missingInfo)
                                     Please complete your profile (Gender, Age, Height, & Weight) to confirm eligibility.
                                 @elseif($canDonate)
-                                    You are currently eligible to donate.
+                                    You are currently eligible to donate blood.
                                 @else
                                     @php
                                         $nextDonationDate = $donor->last_donation_date?->copy()->addMonths(3); 
                                         $remainingTime = $nextDonationDate ? now()->diffForHumans($nextDonationDate, \Carbon\CarbonInterface::DIFF_ABSOLUTE) : 'N/A';
                                     @endphp
-                                    Wait period: {{ $remainingTime }} remaining.
+                                    Wait period: {{ $remainingTime }} remaining until next donation.
                                 @endif
                             </p>
                             <a href="{{ route('donor.profile') }}" class="btn btn-sm btn-outline-{{ $missingInfo ? 'info' : 'secondary' }} mt-3 rounded-pill">
@@ -323,6 +377,16 @@
                         <span class="w-50 text-end">{{ $donor->phone }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <span class="fw-bold text-muted w-50"><i class="bi bi-shield-check me-2 text-primary"></i> Public Contact:</span>
+                        <span class="w-50 text-end">
+                            @if($donor->share_phone)
+                                <span class="badge bg-primary">Phone Number</span>
+                            @else
+                                <span class="badge bg-info">Email Address</span>
+                            @endif
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                         <span class="fw-bold text-muted w-50"><i class="bi bi-droplet me-2 text-primary"></i> Blood Type:</span>
                         <span class="badge bg-danger fs-6 fw-bold p-2 w-50 text-end">{{ $donor->blood_type }}</span>
                     </li>
@@ -424,6 +488,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Availability toggle
     const availabilitySwitch = document.getElementById('dashboard_is_available');
     const availabilityText = document.getElementById('availabilityText');
     
@@ -443,6 +508,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateAvailabilityDisplay(availabilitySwitch.checked);
 
+    // Share phone toggle
+    const sharePhoneSwitch = document.getElementById('dashboard_share_phone');
+    const sharePhoneText = document.getElementById('sharePhoneText');
+    
+    function updateSharePhoneDisplay(isChecked) {
+        sharePhoneText.textContent = isChecked ? 'Phone' : 'Email';
+        sharePhoneText.classList.toggle('text-primary', isChecked);
+        sharePhoneText.classList.toggle('text-info', !isChecked);
+
+        const icon = sharePhoneSwitch.closest('.card-body').querySelector('.bi-shield-check-fill');
+        icon.classList.toggle('text-primary', isChecked);
+        icon.classList.toggle('text-info', !isChecked);
+    }
+    
+    sharePhoneSwitch.addEventListener('change', function() {
+        updateSharePhoneDisplay(this.checked);
+    });
+
+    updateSharePhoneDisplay(sharePhoneSwitch.checked);
+
+    // Last donation date editing
     const lastDonationInput = document.getElementById('last_donation_date_input');
     const lastDonationDisplay = document.getElementById('last_donation_display');
     const editDateBtn = document.getElementById('edit_date_btn');

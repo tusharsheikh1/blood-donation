@@ -31,19 +31,18 @@ Route::prefix('donor')->group(function () {
     // Authenticated donor routes
     Route::middleware('auth:web')->group(function () {
         Route::get('/dashboard', [DonorController::class, 'dashboard'])->name('donor.dashboard');
+        Route::post('/logout', [DonorController::class, 'logout'])->name('donor.logout');
+        // FIX: Changed 'profile' to 'showProfile' to match the Controller method
         Route::get('/profile', [DonorController::class, 'showProfile'])->name('donor.profile');
         Route::post('/profile', [DonorController::class, 'updateProfile'])->name('donor.profile.update');
-        Route::post('/logout', [DonorController::class, 'logout'])->name('donor.logout');
-    });
-});
 
-// Blood Request Routes (Protected - Donors only)
-Route::middleware('auth:web')->prefix('blood-request')->group(function () {
-    Route::get('/create', [BloodRequestController::class, 'create'])->name('blood-request.create');
-    Route::post('/create', [BloodRequestController::class, 'store'])->name('blood-request.store');
-    Route::get('/my-requests', [BloodRequestController::class, 'myRequests'])->name('blood-request.my-requests');
-    Route::post('/{id}/update-status', [BloodRequestController::class, 'updateStatus'])->name('blood-request.update-status');
-    Route::delete('/{id}', [BloodRequestController::class, 'destroy'])->name('blood-request.destroy');
+        // Blood Request Routes
+        Route::get('/blood-request/create', [BloodRequestController::class, 'create'])->name('blood-request.create');
+        Route::post('/blood-request/create', [BloodRequestController::class, 'store'])->name('blood-request.store');
+        Route::get('/my-requests', [BloodRequestController::class, 'myRequests'])->name('blood-request.my-requests');
+        Route::post('/blood-request/{id}/status', [BloodRequestController::class, 'updateStatus'])->name('blood-request.update-status');
+        Route::delete('/blood-request/{id}', [BloodRequestController::class, 'destroy'])->name('blood-request.destroy');
+    });
 });
 
 // API routes for location dropdowns
@@ -63,14 +62,19 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/donors', [DashboardController::class, 'donors'])->name('admin.donors');
 
-    // NEW
+    // Donor Management CRUD
     Route::get('/donors/create', [DashboardController::class, 'createDonor'])->name('admin.donors.create');
     Route::post('/donors', [DashboardController::class, 'storeDonor'])->name('admin.donors.store');
-
     Route::get('/donors/{id}/edit', [DashboardController::class, 'editDonor'])->name('admin.donors.edit');
     Route::post('/donors/{id}', [DashboardController::class, 'updateDonor'])->name('admin.donors.update');
     Route::delete('/donors/{id}', [DashboardController::class, 'deleteDonor'])->name('admin.donors.delete');
+
+    // NEW: Admin Blood Request Routes
+    Route::prefix('blood-request')->group(function () {
+        Route::get('/create', [BloodRequestController::class, 'create'])->name('admin.blood-request.create');
+        Route::post('/create', [BloodRequestController::class, 'store'])->name('admin.blood-request.store');
+    });
+
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });
-
 });

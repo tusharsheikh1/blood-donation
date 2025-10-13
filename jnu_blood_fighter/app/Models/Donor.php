@@ -13,8 +13,6 @@ class Donor extends Authenticatable
 
     /**
      * Mass-assignable attributes.
-     *
-     * Keep existing intake; email/password remain present but can be null.
      */
     protected $fillable = [
         'name',
@@ -27,6 +25,7 @@ class Donor extends Authenticatable
         'upazila',
         'address',
         'is_available',
+        'share_phone',
         'last_donation_date',
         'gender',
         'height_cm',
@@ -36,10 +35,10 @@ class Donor extends Authenticatable
 
     /**
      * Default attribute values.
-     * Ensures new donors default to not available unless explicitly set.
      */
     protected $attributes = [
         'is_available' => false,
+        'share_phone' => true,
     ];
 
     /**
@@ -52,25 +51,40 @@ class Donor extends Authenticatable
 
     /**
      * Attribute casting.
-     * - 'password' => 'hashed' automatically hashes on set (and allows null).
      */
     protected $casts = [
         'email_verified_at'  => 'datetime',
         'last_donation_date' => 'date',
         'is_available'       => 'boolean',
+        'share_phone'        => 'boolean',
         'height_cm'          => 'integer',
         'weight_kg'          => 'integer',
         'age'                => 'integer',
-        'password'           => 'hashed',   // <-- added
+        'password'           => 'hashed',
     ];
 
     /**
      * Send the password reset notification.
-     * (Safe to keep even if most donors won't log in.)
      */
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new DonorResetPasswordNotification($token));
+    }
+
+    /**
+     * Get the contact information to display publicly.
+     */
+    public function getPublicContact(): string
+    {
+        return $this->share_phone ? $this->phone : $this->email;
+    }
+
+    /**
+     * Get the contact type (phone or email).
+     */
+    public function getContactType(): string
+    {
+        return $this->share_phone ? 'phone' : 'email';
     }
 
     /**
